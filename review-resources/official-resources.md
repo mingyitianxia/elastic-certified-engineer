@@ -19,6 +19,7 @@ https://training.elastic.co/exam/elastic-certified-engineerhttps://www.elastic.c
 
 ### 6、官方视频
 https://www.bilibili.com/video/av64692198 （7.x）
+
 https://www.bilibili.com/video/av63688396 （6.x）
 
 ### 7、官方培训
@@ -26,7 +27,10 @@ https://www.elastic.co/cn/training/elasticsearch-engineer-1https://www.elastic.c
 
 ### 8、参考资料
 Elasticsearch -The Definitive Guide
-https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html （英）https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html （中）
+
+https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html （英）
+
+https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html （中）
 
 ### 9、演讲文档及资料（杭州meetup嘉宾，已通过）
 https://github.com/zyongqing/elastic-certified-engineer
