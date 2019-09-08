@@ -23,7 +23,9 @@ https://www.bilibili.com/video/av64692198 （7.x）
 https://www.bilibili.com/video/av63688396 （6.x）
 
 ### 7、官方培训
-https://www.elastic.co/cn/training/elasticsearch-engineer-1https://www.elastic.co/cn/training/elasticsearch-engineer-2
+https://www.elastic.co/cn/training/elasticsearch-engineer-1
+
+https://www.elastic.co/cn/training/elasticsearch-engineer-2
 
 ### 8、参考资料
 Elasticsearch -The Definitive Guide
