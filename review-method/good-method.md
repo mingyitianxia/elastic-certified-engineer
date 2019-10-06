@@ -16,3 +16,7 @@
 柏林计算机博士的Elatic认证考试之路
 
 [3] https://elastic.blog.csdn.net/article/details/95036171
+
+[4] https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9425872739748412855%22%2C%22sourceFrom%22%3A%22bjh%22%7D&from=timeline
+
+[5] https://time.geekbang.org/course/detail/197-142584
