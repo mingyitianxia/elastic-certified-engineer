@@ -1,0 +1,137 @@
+DELETE hamlet-*
+GET _alias
+DELETE _template/hamlet_*
+
+# Create the index `hamlet_1` with one primary shard and no replicas
+# Define a mapping for the default type "_doc" of `hamlet_1`, so 
+#    that (i) the type has three fields, named `speaker`, 
+#    `line_number`, and `text_entry`, (ii) `speaker` and 
+#    `line_number` are unanalysed strings
+
+DELETE hamlet_1
+PUT hamlet_1
+{
+  "settings": {
+    "number_of_replicas": 0,
+    "number_of_shards": 1
+  }, 
+  "mappings": {
+    "properties": { 
+    "speaker":{
+      "type":"text"
+    },
+    "line_number":{
+      "type":"keyword"
+    },
+    "text_entry":{
+      "type":"keyword"
+    }
+  }
+  }
+}
+
+# Furthermore, I want you to disable aggregations on the “line_number” field, as I couldn’t think of any valuable statistic that we could get out of unique, progressive line numbers. Note that by disabling aggregations, you are going to save some resources.
+# Update the mapping of `hamlet_1` by disabling aggregations on 
+#    `line_number`
+GET /hamlet_1/_mapping
+PUT /hamlet_1/_mapping
+{
+  "properties": {
+    "line_number": {
+      "type": "keyword",
+       "doc_values": false
+    }
+  }
+}
+DELETE hamlet_1
+PUT hamlet_1
+{
+  "settings": {
+    "number_of_replicas": 0,
+    "number_of_shards": 1
+  }, 
+  "mappings": {
+    "properties": { 
+    "speaker":{
+      "type":"text"
+    },
+    "line_number":{
+      "type":"keyword",
+       "doc_values": false
+    },
+    "text_entry":{
+      "type":"keyword"
+    }
+  }
+  }
+}
+
+
+# Add some documents to `hamlet_1` by running the following _bulk 
+#    command
+PUT hamlet-1/_doc/_bulk
+{"index":{"_index":"hamlet_1","_id":0}}
+{"line_number":"1.1.1","speaker":"BERNARDO","text_entry":"Whos there?"}
+{"index":{"_index":"hamlet_1","_id":1}}
+{"line_number":"1.1.2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+{"index":{"_index":"hamlet_1","_id":2}}
+{"line_number":"1.1.3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+{"index":{"_index":"hamlet_1","_id":3}}
+{"line_number":"1.2.1","speaker":"KING CLAUDIUS","text_entry":"Though yet of Hamlet     our dear brothers death"}
+{"index":{"_index":"hamlet_1","_id":4}}
+{"line_number":"1.2.2","speaker":"KING CLAUDIUS","text_entry":"The memory be green,    and that it us befitted"}
+
+
+
+# Create the index `hamlet_2` with one primary shard and no replicas 
+# Copy the mapping of `hamlet_1` into `hamlet_2`, but also define a 
+#    multi-field for `speaker`. The name of such multi-field is 
+#    `tokens` and its data type is the (default) analysed string
+# Reindex `hamlet_1` to `hamlet_2`
+# Verify that full-text queries on "speaker.tokens" are enabled on 
+#    `hamlet_2` by running the following command:
+
+PUT hamlet_2
+{
+  "settings": {
+    "number_of_replicas": 0,
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "properties": {
+      "speaker": {
+        "type": "text",
+        "fields": {
+          "tokens": {
+            "type": "text"
+          }
+        }
+      },
+      "line_number": {
+        "type": "keyword",
+        "doc_values": false
+      },
+      "text_entry": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+GET hamlet_2/_mapping
+
+POST _reindex
+{
+  "source": {
+    "index":"hamlet_1"
+  },
+  "dest": {
+    "index":"hamlet_2"
+  }
+}
+
+GET hamlet_2/_search 
+{
+  "query": {
+    "match": { "speaker.tokens": "hamlet" }
+}}
