@@ -1,3 +1,9 @@
+POST /_analyze
+{
+  "text":"The policeman had their confesion",
+  "analyzer":""
+}
+
 
 # 1 Create the indices `hamlet-1` and `hamlet-2`, each with two 
 #    primary shards and no replicas
@@ -145,3 +151,63 @@ POST _reindex?slices=2
 }
 
 GET hamlet-new/_search
+
+
+# Create a pipeline named `split_act_scene_line`. The pipeline 
+#    splits the value of `line_number` using the dots as a 
+#    separator, and stores the split values into three 
+#    new fields named `number_act`, `number_scene`, and 
+#    `number_line`, respectively
+To verify that an ingest pipeline works as expected, you can rely on the _simulate pipeline API.
+# Test the pipeline on the following document{
+  "_source": {
+    "line_number": "1.2.3"
+  }
+}
+
+PUT _ingest/pipeline/split_act_scene_line
+{
+  "description": "split pipeline",
+  "processors": [
+    {
+      "split": {
+        "field": "line_number",
+        "separator": "\\."
+      }
+    }
+  ]
+}
+
+POST _ingest/pipeline/_simulate
+{
+  "pipeline" : {
+   "description": "split pipeline",
+  "processors": [
+    {
+      "split": {
+        "field": "line_number",
+        "separator": "\\."
+      }
+    }
+  ]
+  },
+  "docs" : [
+    { "_source": { "line_number": "1.2.3"} }
+  ]
+}
+
+
+
+PUT hamlet-new/_doc/111
+{
+  "line_number": "1.2.3"
+}
+
+GET hamlet-new/_doc/111
+#Satisfied with the outcome? Go update your documents, then!
+# Update all documents in `hamlet-new` by using the 
+#    `split_act_scene_line` pipeline
+
+POST hamlet-new/_update_by_query?pipeline=split_act_scene_line
+
+POST hamlet-new/_search
