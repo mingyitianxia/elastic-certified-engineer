@@ -21,3 +21,6 @@
 
 [5] https://time.geekbang.org/course/detail/197-142584 极客时间阮老师经验帖
 https://github.com/onebirdrocks/geektime-ELK/blob/master/part-5/elastic%E8%AE%A4%E8%AF%81/index.html 阮老师一键链接
+
+[6] https://elasticsearch.cn/article/13530
+lastic认证工程师考试经验分享
