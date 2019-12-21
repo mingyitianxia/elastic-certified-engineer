@@ -1,4 +1,5 @@
 ### 1、自定义分词插件，让king's和kings有相同的评分
+https://elasticsearch.cn/article/13530
 
 ```
 PUT test002
