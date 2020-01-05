@@ -35,4 +35,4 @@ https://github.com/onebirdrocks/geektime-ELK/blob/master/part-5/elastic%E8%AE%A4
 https://elasticsearch.cn/article/13530
 
 ### 7、wood 大叔经验
-https://elasticsearch.cn/article/13530
+https://elasticsearch.cn/article/6133
