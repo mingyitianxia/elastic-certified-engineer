@@ -90,6 +90,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.2/multi-fields.html
 
 #### 5.4 Configure an index so that it properly maintains the relationships of nested arrays of objects
 https://www.elastic.co/guide/en/elasticsearch/reference/7.2/nested.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/parent-join.html
 
 ## 6、Cluster Administration
 #### 6.1 Allocate the shards of an index to specific nodes based on a given set of requirements
