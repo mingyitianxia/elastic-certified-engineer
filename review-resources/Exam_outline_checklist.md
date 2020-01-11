@@ -8,9 +8,11 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-node.html
 #### 1.3 Secure a cluster using Elasticsearch Security
 https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-settings.html
 https://www.elastic.co/guide/en/elasticsearch/reference/7.2/configuring-security.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/setup-passwords.html
 
 #### 1.4Define role-based access control using Elasticsearch Security
-
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-put-role.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-put-user.html
 
 ## 2、Indexing Data
 #### 2.1 Define an index that satisfies a given set of requirements
