@@ -84,3 +84,119 @@ POST whitespace_example/_msearch
 #### Keyword Analyzer – 不分词，直接将输入当作输出
 #### Patter Analyzer – 正则表达式，默认 \W+ (非字符分隔)
 #### Language – 提供了30多种常见语言的分词器
+
+
+### 4、聚合实现
+
+```
+PUT  earthquakes
+{
+  "mappings":{
+    "properties":{
+      "magnitude":{
+        "type":"long"
+      }
+    }
+  }
+}
+
+POST /earthquakes/_search
+{
+  "size": 0,
+  "aggs": {
+    "mag_over_time": {
+      "date_histogram": {
+        "field": "date",
+        "calendar_interval": "month"
+      },
+      "aggs": {
+        "avg_mags": {
+          "avg": {
+            "field": "magnitude.keyword"
+          }
+        }
+      }
+    },
+    "max_mag_of_month": {
+      "max_bucket": {
+        "buckets_path": "mag_over_time>avg_mags"
+      }
+    }
+  }
+}
+```
+
+### 4、管道实现
+```
+PUT _ingest/pipeline/earthquakes_pipeline
+{
+  "processors" : [
+   {
+  "uppercase": {
+    "field": "magnitude"
+  }
+},   {
+        "script": {
+             "lang": "painless",
+          "source": """
+           if (ctx.containsKey("batch_num") == true) {ctx.batch_num +=1}else {ctx.batch_num =1}
+          """
+        }
+      }
+  ]
+}
+
+
+PUT earthquakes
+POST earthquakes/_doc/1
+{
+  "cont":"1111",
+  "magnitude":"asdf"
+}
+
+POST earthquakes/_update_by_query?pipeline=earthquakes_pipeline
+{
+  "query":{
+    "match_all":{}
+  }
+}
+
+GET earthquakes/_search
+```
+
+### 4、查询实现
+```
+POST movies/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "overview": "new york"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "title": "new york"
+          }
+        },
+        {
+          "match_phrase": {
+            "tags": "new york"
+          }
+        },
+        {
+          "match_phrase": {
+            "tagline": "new york"
+          }
+        }
+      ],
+      "minimum_should_match" : 1
+    }
+  }
+}
+```
+https://github.com/linuxacademy/content-elastic-certified-engineer/tree/master/sample_data
