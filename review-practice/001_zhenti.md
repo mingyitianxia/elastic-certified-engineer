@@ -129,6 +129,8 @@ POST /earthquakes/_search
 ```
 
 ### 4、管道实现
+![1](imgs/ingest_zhenti.png)
+==
 ```
 PUT _ingest/pipeline/earthquakes_pipeline
 {
@@ -167,6 +169,8 @@ GET earthquakes/_search
 ```
 
 ### 4、查询实现
+![1](imgs/search_zhenti.png)
+==
 ```
 POST movies/_search
 {
