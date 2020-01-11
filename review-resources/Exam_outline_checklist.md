@@ -25,10 +25,14 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs.html
 https://www.elastic.co/guide/en/elasticsearch/reference/7.2/indices-aliases.html
 
 #### 2.4 Define and use an index template for a given pattern that satisfies a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/indices-templates.html
 
 #### 2.5 Define and use a dynamic template that satisfies a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/dynamic-templates.html
 
 #### 2.6 Use the Reindex API and Update By Query API to reindex and/or update documents
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-reindex.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-update-by-query.html
 
 #### 2.7 Define and use an ingest pipeline that satisfies a given set of requirements, including the use of Painless to modify documents
 
