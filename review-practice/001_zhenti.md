@@ -88,8 +88,7 @@ POST whitespace_example/_msearch
 
 ### 4、聚合实现
 
-![](https://github.com/mingyitianxia/elastic-certified-engineer/blob/master/review-practice/imgs/agg_zhenti.png)
-
+![1](imgs/agg_zhenti.png)
 ==
 ```
 PUT  earthquakes
