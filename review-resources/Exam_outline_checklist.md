@@ -16,12 +16,22 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-put-use
 
 ## 2、Indexing Data
 #### 2.1 Define an index that satisfies a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/indices-create-index.html
+
 #### 2.2 Perform index, create, read, update, and delete operations on the documents of an index
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs.html
+
 #### 2.3 Define and use index aliases
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/indices-aliases.html
+
 #### 2.4 Define and use an index template for a given pattern that satisfies a given set of requirements
+
 #### 2.5 Define and use a dynamic template that satisfies a given set of requirements
+
 #### 2.6 Use the Reindex API and Update By Query API to reindex and/or update documents
+
 #### 2.7 Define and use an ingest pipeline that satisfies a given set of requirements, including the use of Painless to modify documents
+
 
 ## 3、Queries
 #### 3.1 Write and execute a search query for terms and/or phrases in one or more fields of an index
