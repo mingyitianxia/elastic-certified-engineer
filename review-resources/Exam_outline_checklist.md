@@ -35,6 +35,9 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-reindex.html
 https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-update-by-query.html
 
 #### 2.7 Define and use an ingest pipeline that satisfies a given set of requirements, including the use of Painless to modify documents
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/ingest.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-scripting.html
+https://www.elastic.co/guide/en/elasticsearch/painless/7.2/painless-lang-spec.html
 
 
 ## 3、Queries
