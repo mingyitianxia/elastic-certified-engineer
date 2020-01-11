@@ -1,10 +1,16 @@
 ## 1、Installation and Configuration
 #### 1.1 Deploy and start an Elasticsearch cluster that satisfies a given set of requirements
-https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/setup.html
 
 #### 1.2 Configure the nodes of a cluster to satisfy a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/important-settings.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-node.html
 #### 1.3 Secure a cluster using Elasticsearch Security
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-settings.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/configuring-security.html
+
 #### 1.4Define role-based access control using Elasticsearch Security
+
 
 ## 2、Indexing Data
 #### 2.1 Define an index that satisfies a given set of requirements
