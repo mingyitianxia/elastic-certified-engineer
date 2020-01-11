@@ -42,28 +42,75 @@ https://www.elastic.co/guide/en/elasticsearch/painless/7.2/painless-lang-spec.ht
 
 ## 3、Queries
 #### 3.1 Write and execute a search query for terms and/or phrases in one or more fields of an index
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/query-dsl.html
+
 #### 3.2 Write and execute a search query that is a Boolean combination of multiple queries and filters
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/query-dsl-bool-query.html
+
 #### 3.3 Highlight the search terms in the response of a query
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-request-highlighting.html
+
 #### 3.4 Sort the results of a query by a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-request-sort.html
+
 #### 3.5Implement pagination of the results of a search query
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-request-from-size.html
+
 #### 3.6 Use the scroll API to retrieve large numbers of results
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-request-scroll.html
+
 #### 3.7 Apply fuzzy matching to a query
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/query-dsl-fuzzy-query.html
+
 #### 3.8 Define and use a search template
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-template.html
+
 #### 3.9 Write and execute a query that searches across multiple clusters
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-cross-cluster-search.html
+
 
 ## 4、Aggregations
 #### 4.1 Write and execute metric and bucket aggregations
-#### 4.2 Write and execute aggregations that contain sub-aggregations
-#### 4.3 Mappings and Text Analysis
-#### 4.4 Define a mapping that satisfies a given set of requirements
-#### 4.5 Define and use a custom analyzer that satisfies a given set of requirements
-#### 4.6 Define and use multi-fields with different data types and/or analyzers
-#### 4.7 Configure an index so that it properly maintains the relationships of nested arrays of objects
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-aggregations-metrics.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-aggregations-bucket.html
 
-## 5、Cluster Administration
-#### 5.1 Allocate the shards of an index to specific nodes based on a given set of requirements
-#### 5.2 Configure shard allocation awareness and forced awareness for an index
-#### 5.3 Diagnose shard issues and repair a cluster’s health
-#### 5.4 Backup and restore a cluster and/or specific indices
-#### 5.5 Configure a cluster for use with a hot/warm architecture
-#### 5.6 Configure a cluster for cross cluster search
+#### 4.2 Write and execute aggregations that contain sub-aggregations
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/search-aggregations-pipeline.html
+
+## 5、 Mappings and Text Analysis
+#### 5.1 Define a mapping that satisfies a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/mapping.html
+
+#### 5.2 Define and use a custom analyzer that satisfies a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/analysis.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/analysis-custom-analyzer.html
+
+#### 5.3 Define and use multi-fields with different data types and/or analyzers
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/multi-fields.html
+
+#### 5.4 Configure an index so that it properly maintains the relationships of nested arrays of objects
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/nested.html
+
+## 6、Cluster Administration
+#### 6.1 Allocate the shards of an index to specific nodes based on a given set of requirements
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/index-modules-allocation.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-cluster.html
+
+#### 6.2 Configure shard allocation awareness and forced awareness for an index
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/allocation-awareness.html
+
+#### 6.3 Diagnose shard issues and repair a cluster’s health
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cluster-health.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cluster-allocation-explain.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cluster-reroute.html
+
+#### 6.4 Backup and restore a cluster and/or specific indices
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/backup-cluster.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-snapshots.html
+
+#### 6.5 Configure a cluster for use with a hot/warm architecture
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/shard-allocation-filtering.html
+
+#### 6.6 Configure a cluster for cross cluster search
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-remote-clusters.html
+https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-cross-cluster-search.html
