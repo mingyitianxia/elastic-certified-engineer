@@ -152,11 +152,74 @@ GET movies_alias/_search
 - 增加一个整形字段，将索引 A中的一个字段的字符串长度，计算后写入
 - 将 A 文档中的字符串以“；”分隔后，写入索引B中的数组字段中
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT aindex
+{
+  "mappings": {
+    "properties": {
+      "name":{"type":"text"},
+      "horry":{"type":"keyword"}
+    }
+  }
+}
+
+GET aindex/_mapping
+
+POST aindex/_bulk
+{"index":{"_id":1}}
+{"name":"xiaozhang","horry":"pingpang;basketball;football"}
+{"index":{"_id":2}}
+{"name":"mingyi","horry":"glof;basketball;football"}
+{"index":{"_id":3}}
+{"name":"mytx","horry":"glof;basketball;ticket"}
+
+
+PUT _ingest/pipeline/my_pipeline_id
+{
+  "description": "describe pipeline",
+  "processors": [
+    {
+      "split": {
+        "field": "horry",
+        "separator": ";"
+      }
+    },
+    {
+      "script": {
+        "source": """
+            ctx._length = ctx.name.length();
+"""
+      }
+    }
+  ]
+}
+
+PUT bindex
+GET bindex/_mapping
+
+POST _reindex
+{
+  "source": {
+    "index": "aindex"
+  },
+  "dest": {
+    "index": "bindex",
+    "pipeline": "my_pipeline_id"
+  }
+}
+
+GET bindex/_search
+```
+
 ## 2.5 定义一个 Pipeline，并且将 eathquakes 索引的文档进行更新
 - pipeline的 ID 为 eathquakes_pipeline
 - 将 magnitude_type 的字段值改为大写
 - 如果文档不包含 “batch_number”, 增加这个字段，将数值设置为 1
 - 如果已经包含 batch_number, 字段值➕1 
+
+
+
 
 ## 2.6 为索引中的文档增加一个新的字段，字段值为 现有字段1+现有字段2+现有字段3
 
