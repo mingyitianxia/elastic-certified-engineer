@@ -218,10 +218,92 @@ GET bindex/_search
 - 如果文档不包含 “batch_number”, 增加这个字段，将数值设置为 1
 - 如果已经包含 batch_number, 字段值➕1 
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT earthquakes
+{
+  "mappings": {
+    "properties": {
+      "name":{"type":"text"},
+      "level":{"type":"integer"},
+      "magnitude_type":{"type":"keyword"},
+      "batch_number":{"type":"integer"}
+    }
+  }
+}
 
+POST earthquakes/_bulk
+{"index":{"_id":1}}
+{"name":"111","level":1,"magnitude_type":"small","batch_number":22}
+{"index":{"_id":2}}
+{"name":"222","level":2,"magnitude_type":"big"}
+
+PUT _ingest/pipeline/my_pipeline_002
+{
+  "processors": [
+    {
+      "uppercase": {
+        "field": "magnitude_type"
+      }
+    },
+    {
+  "script": {
+    "lang": "painless",
+    "source": "if(!ctx.containsKey(\"batch_number\")) {ctx.batch_number = 1} else {ctx.batch_number+=1}"
+    }
+  }
+  ]
+}
+
+POST earthquakes/_update_by_query?pipeline=my_pipeline_002
+
+GET earthquakes/_search
+```
 
 
 ## 2.6 为索引中的文档增加一个新的字段，字段值为 现有字段1+现有字段2+现有字段3
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+DELETE test_index
+PUT test_index
+{
+  "mappings":{
+    "properties":{
+      "value01":{"type":"integer"},
+      "value02":{"type":"integer"},
+      "value03":{"type":"integer"}
+    }
+  }
+}
+
+POST test_index/_bulk
+{"index":{"_id":1}}
+{"value01":1,"value02":2,"value03":3}
+{"index":{"_id":2}}
+{"value01":3,"value02":2,"value03":3}
+{"index":{"_id":3}}
+{"value01":5,"value02":2,"value03":3}
+
+
+PUT _ingest/pipeline/newadd_pipeline
+{
+  "processors": [
+    {
+      "script": {
+        "lang": "painless",
+        "source": "ctx.newadd = (ctx.value01 + ctx.value02 + ctx.value03)",
+        "params": {
+          "param_c": 10
+        }
+      }
+    }
+  ]
+}
+
+POST test_index/_update_by_query?pipeline=newadd_pipeline
+
+POST test_index/_search
+```
 
 # 3、查询篇
 ## 3.1 写一个查询，要求某个关键字在文档的 4 个字段中至少包含两个以上
