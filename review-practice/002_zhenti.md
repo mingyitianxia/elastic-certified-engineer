@@ -24,10 +24,50 @@
 - 一切 text 类型的字段，类型全部映射成 keyword
 - 一切以 int_开头命名的字段，类型都设置成 integer
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT index001
+{
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "longs_as_strings": {
+          "match_mapping_type": "string",
+          "unmatch": "int_*",
+          "mapping": {
+            "type": "keyword"
+          }
+        }
+      },
+      {
+        "longs_as_strings": {
+          "match":   "int_*",
+          "mapping": {
+            "type": "integer"
+          }
+        }
+      }
+    ]
+  }
+}
+
+POST index001/_bulk
+{"index":{"_id":1}}
+{"cont":"你好我好铭毅天下好", "int_value":35}
+{"index":{"_id":2}}
+{"cont":"铭毅天下", "int_value":35}
+{"index":{"_id":3}}
+{"cont":"铭毅好", "int_value":35}
+
+GET index001/_mapping
+```
 ## 2.2 设置一个Index Template，符合以下的要求
 - 为 log 和log- 开头的索引。创建 3 个主分片，1 个副本分片
 - 同时为索引创建一个相应的 alias
 - 使用 bulk API，写入多条电影数据
+
+
+
 ## 2.3 为 movies index 设定一个 Index Alias，默认查询只返回评分大于3的电影
 
 ## 2.4 给一个索引 A，要求创建索引 B，通过 Reindex API，将索引 A 中的文档写入索引 B，同时满足以下要求
