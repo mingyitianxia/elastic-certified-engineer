@@ -66,9 +66,87 @@ GET index001/_mapping
 - 同时为索引创建一个相应的 alias
 - 使用 bulk API，写入多条电影数据
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT _template/template_001
+{
+  "index_patterns": ["log*", "log-*"],
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas":1
+  },
+
+"aliases" : {
+        "alias_001" : {}}
+}
 
 
+PUT log-001
+
+POST log-001/_bulk
+{"index":{"_id":1}}
+{"name":"movice_001"}
+{"index":{"_id":2}}
+{"name":"movice_002"}
+{"index":{"_id":3}}
+{"name":"movice_003"}
+
+
+GET log-001
+GET alias_001/_search
+```
 ## 2.3 为 movies index 设定一个 Index Alias，默认查询只返回评分大于3的电影
+
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT movies_index
+{
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text"
+      },
+      "score": {
+        "type": "float"
+      }
+    }
+  }
+}
+
+PUT movies_index/_bulk
+{"index":{"_id":1}}
+{"name":"001","score":1}
+{"index":{"_id":2}}
+{"name":"001","score":4}
+{"index":{"_id":3}}
+{"name":"001","score":3}
+{"index":{"_id":4}}
+{"name":"001","score":3.8}
+
+GET movies_index/_mapping
+GET movies_index/_search
+
+POST /_aliases
+{
+  "actions": [
+    {
+      "add": {
+        "index": "movies_index",
+        "alias": "movies_alias",
+        "filter": {
+          "range": {
+              "score":{
+                "gt":3
+              }
+          }
+        }
+      }
+    }
+  ]
+}
+
+GET movies_alias/_search
+```
 
 ## 2.4 给一个索引 A，要求创建索引 B，通过 Reindex API，将索引 A 中的文档写入索引 B，同时满足以下要求
 - 增加一个整形字段，将索引 A中的一个字段的字符串长度，计算后写入
