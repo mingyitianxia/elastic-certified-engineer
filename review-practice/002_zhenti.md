@@ -530,6 +530,73 @@ POST earthquakes_ext/_search
  
 ## 5.1 一篇文档，字段内容包括了 “hello & world”，索引后，要求使用 match_phrase query, 
 查询 hello & world 或者 hello and world 都能匹配
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT my_index_002
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "emoticons"
+          ],
+          "tokenizer": "whitespace"
+        }
+      },
+      "tokenizer": {
+        "punctuation": {
+          "type": "pattern",
+          "pattern": "[ .,!?]"
+        }
+      },
+      "char_filter": {
+        "emoticons": {
+          "type": "mapping",
+          "mappings": [
+            "& => and"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "my_custom_analyzer"
+      }
+    }
+  }
+}
+
+
+PUT my_index_002/_bulk
+{"index":{"_id":1}}
+{"title":"hello & world"}
+{"index":{"_id":2}}
+{"title":"hello and world"}
+
+
+POST my_index_002/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "hello & world"
+    }
+  }
+}
+
+POST my_index_002/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "hello and world"
+    }
+  }
+}
+```
 
 ## 5.2 reindex 索引，同时确保给定的两个查询，都能搜索到相关的文档，并且文档的算分是一样的
  
