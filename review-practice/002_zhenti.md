@@ -7,6 +7,40 @@
 - node2和node3配置成 ingest 和 data node
 - 设置 jvm 为1g
 
+```
+1、elasticsearch.yml
+cluster.name: geektime
+
+node.name: node2
+node.name: node3
+
+2、node1
+node.name: node1
+node.master: true 
+node.data: false 
+node.ingest: false 
+node.ml: false 
+
+3、node2
+node.name: node2
+node.master: false 
+node.data: false 
+node.ingest: true 
+node.ml: false
+
+4、node3
+node.name: node3
+node.master: false 
+node.data: true 
+node.ingest: false 
+node.ml: false
+
+5、jvm.options
+-Xms1g 
+-Xmx1g
+
+```
+
 ## 1.2 配置 3节点的集群，加上一个 Kibana 的实例，设定以下安全防护
 - 为集群配置 basic authentication 
 - 将 Kibana 连接到 Elasticsearch
