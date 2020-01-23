@@ -345,6 +345,34 @@ GET search_index/_search
 - 写入 search template
 - 根据 search template 写出相应的 query
 
+```
+GET _search/template
+{
+    "source" : {
+      "query": { "match" : { "{{my_field}}" : "{{my_value}}" } },
+      "size" : "{{my_size}}"
+    },
+    "params" : {
+        "my_field" : "cont2",
+        "my_value" : "铭毅天下",
+        "my_size" : 5
+    }
+}
+
+GET _render/template
+{
+    "source" : {
+      "query": { "match" : { "{{my_field}}" : "{{my_value}}" } },
+      "size" : "{{my_size}}"
+    },
+    "params" : {
+        "my_field" : "cont2",
+        "my_value" : "铭毅天下",
+        "my_size" : 5
+    }
+}
+
+```
 
 ## 3.3 对一个文档的多个字段进行查询，要求最终的算分是几个字段上算分的总和，同时要求对特定字段设置 boosting 值
 ```
