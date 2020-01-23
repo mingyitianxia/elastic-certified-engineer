@@ -98,6 +98,46 @@ PUT orders/_bulk
 - 索引 B 分片全部落在 节点 2和3 
 - 不允许删除数据的情况下，保证集群状态为 Green
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+在elasticsearch.yml下添加如下配置（举例）：
+```
+node.attr.size: medium
+node.attr.size: big
+```
+
+```
+PUT a_index
+{
+  "settings": {
+    "index.routing.allocation.include.size": "big"
+  }
+}
+
+PUT b_index
+{
+  "settings": {
+    "index.routing.allocation.include.size": "medium"
+  }
+}
+
+
+POST a_index/_bulk
+{"index":{"_id":1}}
+{"name":"1111"}
+{"index":{"_id":2}}
+{"name":"2222"}
+
+POST b_index/_bulk
+{"index":{"_id":111}}
+{"name":"33333"}
+{"index":{"_id":2222}}
+{"name":"4444"}
+
+GET _cat/nodeattrs
+
+GET _cat/shards?v
+```
+
 # 2、索引数据篇
 ## 2.1 为一个索引，按要求设置以下 dynamic Mapping
 - 一切 text 类型的字段，类型全部映射成 keyword
