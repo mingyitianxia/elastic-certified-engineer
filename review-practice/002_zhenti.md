@@ -48,7 +48,48 @@ node.ml: false
 - 创建一个名为 orders 的索引
 - geektime 用户只能读取和写入 oders 的索引，不能删除及修改 orders
 
+```
+elasticsearch.yml配置：
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+```
 
+这里有个问题?考试的时候，如下操作是允许kibana图形化吧？估计概率不大（已经向官方邮件求证，估计还得dsl实现）
+
+```
+PUT orders/_bulk
+{"index":{"_id":1}}
+{"name":"11111"}
+{"index":{"_id":2}}
+{"name":"22222"}
+
+POST /_security/role/geektime_role
+{
+  "indices": [
+    {
+      "names": [ "orders" ],
+      "privileges": ["read","write"]
+    }
+  ]
+}
+
+POST /_security/user/geektime
+{
+  "password" : "123456",
+  "roles" : [ "geektime_role" ]
+}
+
+#会提示失败
+DELETE orders
+
+#以下，提示成功
+GET orders/_search
+PUT orders/_bulk
+{"index":{"_id":3}}
+{"name":"3333"}
+{"index":{"_id":4}}
+{"name":"4444"}
+```
 
 ## 1.3 配置 3节点的集群，同时满足以下要求
 - 确保索引 A 的分片全部落在在节点1
