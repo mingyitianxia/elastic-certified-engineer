@@ -1,6 +1,10 @@
-以下试题来源：https://github.com/geektime-geekbang/geektime-ELK/tree/master/part-5/elastic%E8%AE%A4%E8%AF%81
-试题作者：阮老师
-答案作者：铭毅天下 首发于【死磕Elasticsearch知识星球】http://t.cn/RmwM3N9
+- 以下试题来源：https://github.com/geektime-geekbang/geektime-ELK/tree/master/part-5/elastic%E8%AE%A4%E8%AF%81
+
+- 试题作者：阮老师
+
+- 答案作者：铭毅天下 首发于【死磕Elasticsearch知识星球】http://t.cn/RmwM3N9
+
+- 20200124 00:27
 
 # 1、集群部署篇
 ## 1.1 部署 3 节点的集群，需要同时满足以下要求
