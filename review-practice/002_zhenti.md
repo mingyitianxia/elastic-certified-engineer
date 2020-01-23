@@ -310,6 +310,7 @@ POST test_index/_search
  
 - bool 查询，should / minimum_should_match
 
+
 ## 3.2 按照要求写一个 search template
 - 写入 search template
 - 根据 search template 写出相应的 query
@@ -319,7 +320,74 @@ POST test_index/_search
 ## 3.4 针对一个索引进行查询，当索引的文档中存在对象数组时，会搜索到了不期望的数据。需要重新定义 mapping，并提供改写后的 query 语句
  
 - Nested Object
+```
+PUT my_index
+{
+  "mappings": {
+    "properties": {
+      "user": {
+        "type": "nested" 
+      }
+    }
+  }
+}
 
+PUT my_index/_doc/1
+{
+  "group" : "fans",
+  "user" : [
+    {
+      "first" : "铭毅",
+      "last" :  "天下"
+    },
+    {
+      "first" : "铭毅",
+      "last" :  "elastic"
+    }
+  ]
+}
+
+GET my_index/_search
+{
+  "query": {
+    "nested": {
+      "path": "user",
+      "query": {
+        "bool": {
+          "must": [
+            { "match": { "user.first": "铭毅" }},
+            { "match": { "user.last":  "elastic" }} 
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET my_index/_search
+{
+  "query": {
+    "nested": {
+      "path": "user",
+      "query": {
+        "bool": {
+          "must": [
+            { "match": { "user.first": "铭毅" }},
+            { "match": { "user.last":  "elastic" }} 
+          ]
+        }
+      },
+      "inner_hits": { 
+        "highlight": {
+          "fields": {
+            "user.first": {}
+          }
+        }
+      }
+    }
+  }
+}
+```
 # 4、聚合篇
 ## 4.1 earthquakes索引中包含了过去11个月的地震信息，请通过一句查询，获取以下信息
  
