@@ -777,6 +777,69 @@ POST a_index_002/_search
 - 创建跨集群搜索
 - 创建一条查询，能够同时查到两个集群上的 movies 数据
 
+【铭毅天下 elastic.blog.csdn.net 答案】
+
+```
+#cluster_one设置
+PUT _cluster/settings
+{
+  "persistent": {
+    "cluster": {
+      "remote": {
+        "cluster_two": {
+          "seeds": [
+            "172.17.0.17:9301"
+          ]
+        }
+      }
+    }
+  }
+}
+
+#cluster_two设置
+PUT _cluster/settings
+{
+  "persistent": {
+    "cluster": {
+      "remote": {
+        "cluster_one": {
+          "seeds": [
+            "172.17.0.17:9300"
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET orders/_search
+
+#在9301的集群添加如下数据
+POST orders/_doc
+{
+  "name": "9301_11111"
+}
+
+POST orders/_doc
+{"name":"9301_22222"}
+
+GET /orders/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+#跨集群检索
+GET /orders,cluster_two:orders/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+```
+
 ## 6.3 解决集群变红或者变黄的问题
 - 技能1：通过 explain API 查看
 - 技能2：shard filtering API，查看 include
