@@ -309,14 +309,56 @@ POST test_index/_search
 ## 3.1 写一个查询，要求某个关键字在文档的 4 个字段中至少包含两个以上
  
 - bool 查询，should / minimum_should_match
-
-
+```
+GET search_index/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match_phrase": {
+            "cont1": "铭毅天下"
+          }
+        },
+        {
+          "match_phrase": {
+            "cont2": "铭毅天下"
+          }
+        },
+        {
+          "match_phrase": {
+            "cont3": "铭毅天下"
+          }
+        },
+        {
+          "match_phrase": {
+            "cont4": "铭毅天下"
+          }
+        }
+      ],
+      "minimum_should_match": 2
+    }
+  }
+}
+```
 ## 3.2 按照要求写一个 search template
 - 写入 search template
 - 根据 search template 写出相应的 query
 
-## 3.3 对一个文档的多个字段进行查询，要求最终的算分是几个字段上算分的总和，同时要求对特定字段设置 boosting 值
 
+## 3.3 对一个文档的多个字段进行查询，要求最终的算分是几个字段上算分的总和，同时要求对特定字段设置 boosting 值
+```
+GET search_index/_search
+{
+  "query": {
+    "multi_match": {
+      "type":"most_fields", 
+      "query": "铭毅天下",
+      "fields": ["cont2^3", "cont3"]
+    }
+  }
+}
+```
 ## 3.4 针对一个索引进行查询，当索引的文档中存在对象数组时，会搜索到了不期望的数据。需要重新定义 mapping，并提供改写后的 query 语句
  
 - Nested Object
