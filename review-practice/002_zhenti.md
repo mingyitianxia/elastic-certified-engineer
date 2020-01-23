@@ -545,12 +545,6 @@ PUT my_index_002
           "tokenizer": "whitespace"
         }
       },
-      "tokenizer": {
-        "punctuation": {
-          "type": "pattern",
-          "pattern": "[ .,!?]"
-        }
-      },
       "char_filter": {
         "emoticons": {
           "type": "mapping",
@@ -605,6 +599,91 @@ POST my_index_002/_search
 - 在不改变字段的属性，将数据索引到新的索引上
  
 - 确保两个查询有一致的搜索结果和算分
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT _template/my_index_template
+{
+  "index_patterns": [
+    "a_index_*"
+  ],
+  "settings": {
+    "number_of_shards": 1,
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "emoticons"
+          ],
+          "tokenizer": "whitespace"
+        }
+      },
+      "char_filter": {
+        "emoticons": {
+          "type": "mapping",
+          "mappings": [
+            "' => "
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "my_custom_analyzer"
+      }
+    }
+  }
+}
+
+PUT a_index_001/_bulk
+{"index":{"_id":1}}
+{"title":"smith's"}
+{"index":{"_id":2}}
+{"title":"smiths"}
+
+POST a_index_001/_analyze
+{
+  "text": "smith's",
+  "analyzer": "my_custom_analyzer"
+}
+POST a_index_001/_analyze
+{
+  "text": "smiths",
+  "analyzer": "my_custom_analyzer"
+}
+
+
+POST _reindex
+{
+  "source": {
+    "index": "a_index_001"
+  },
+  "dest": {
+    "index": "a_index_002"
+  }
+}
+
+POST a_index_002/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "smith's"
+    }
+  }
+}
+
+POST a_index_002/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "smiths"
+    }
+  }
+}
+```
 
 # 6 集群管理篇
 ## 6.1 安装并配置 一个 hot & warm 架构的集群
