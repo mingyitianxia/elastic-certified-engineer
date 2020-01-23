@@ -811,6 +811,44 @@ POST a_index_002/_search
 - 新创建的索引，数据写入 hot 节点
 - 通过一条命令，将数据从 hot 节点移动到 warm 节点
 
+
+【铭毅天下 elastic.blog.csdn.net 答案】
+
+配置文件： elasticsearch.yml 添加
+```
+node.attr.hot_warm_type: hot
+node.attr.hot_warm_type: warm
+```
+
+```
+DELETE hotwarm_index
+PUT hotwarm_index
+{
+  "settings": {
+      "index.routing.allocation.include.hot_warm_type": "hot",
+      "number_of_replicas": 0,
+      "number_of_shards": 1
+  }
+}
+
+PUT hotwarm_index/_bulk
+{"index":{"_id":1}}
+{"name":"elastic.blog.csdn.net"}
+{"index":{"_id":2}}
+{"name":"铭毅天下"}
+
+GET _cat/shards?v
+
+PUT hotwarm_index/_settings
+{
+  "index.routing.allocation.include.hot_warm_type": "warm"
+}
+
+
+GET _cat/shards?v
+```
+
+
 ## 6.2 为两个集群配置跨集群搜索
  
 - 两个集群都有 movies 的索引
