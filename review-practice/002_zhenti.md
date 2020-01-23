@@ -1,6 +1,6 @@
 # 1、集群部署篇
 ## 1.1 部署 3 节点的集群，需要同时满足以下要求
- 
+【铭毅天下 elastic.blog.csdn.net 答案】 
 - 集群名为“geektime” 
 - 将每个节点的名字设为和机器名一样，分别为 node1，node2，node3 
 - node1 配置成dedicated master-eligable节点
@@ -47,6 +47,8 @@ node.ml: false
 - 创建一个名为 geektime 的用户
 - 创建一个名为 orders 的索引
 - geektime 用户只能读取和写入 oders 的索引，不能删除及修改 orders
+
+【铭毅天下 elastic.blog.csdn.net 答案】
 
 ```
 elasticsearch.yml配置：
@@ -786,3 +788,31 @@ POST a_index_002/_search
  （4）使用了错误的 routing node attribute
  
 ## 6.4 备份一个集群中指定的几个索引
+【铭毅天下 elastic.blog.csdn.net 答案】
+配置：elasticsearch.yml 添加如下：
+path.repo: ["/home/elasticsearch/elasticsearch-7.2.0/backup"]
+
+```
+PUT /_snapshot/my_fs_backup
+{
+    "type": "fs",
+    "settings": {
+        "location": "/home/elasticsearch/elasticsearch-7.2.0/backup",
+        "compress": true
+    }
+}
+GET /_cat/indices
+
+PUT /_snapshot/my_fs_backup/snapshot_1?wait_for_completion=true
+{
+  "indices": "orders",
+  "ignore_unavailable": true,
+  "include_global_state": false
+}
+
+DELETE orders
+
+POST /_snapshot/my_fs_backup/snapshot_1/_restore
+
+GET orders/_search
+```
