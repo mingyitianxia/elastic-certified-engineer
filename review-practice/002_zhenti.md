@@ -309,6 +309,7 @@ POST test_index/_search
 ## 3.1 写一个查询，要求某个关键字在文档的 4 个字段中至少包含两个以上
  
 - bool 查询，should / minimum_should_match
+【铭毅天下 elastic.blog.csdn.net 答案】
 ```
 GET search_index/_search
 {
@@ -344,6 +345,7 @@ GET search_index/_search
 ## 3.2 按照要求写一个 search template
 - 写入 search template
 - 根据 search template 写出相应的 query
+【铭毅天下 elastic.blog.csdn.net 答案】
 
 ```
 GET _search/template
@@ -375,6 +377,7 @@ GET _render/template
 ```
 
 ## 3.3 对一个文档的多个字段进行查询，要求最终的算分是几个字段上算分的总和，同时要求对特定字段设置 boosting 值
+【铭毅天下 elastic.blog.csdn.net 答案】
 ```
 GET search_index/_search
 {
@@ -390,6 +393,7 @@ GET search_index/_search
 ## 3.4 针对一个索引进行查询，当索引的文档中存在对象数组时，会搜索到了不期望的数据。需要重新定义 mapping，并提供改写后的 query 语句
  
 - Nested Object
+【铭毅天下 elastic.blog.csdn.net 答案】
 ```
 PUT my_index
 {
@@ -464,6 +468,59 @@ GET my_index/_search
 - 过去11个月，每个月的平均 地震等级（magiitude）
 - 过去11个月里，平均地震等级最高的一个月及其平均地震等级
 - 搜索不能返回任何文档
+【铭毅天下 elastic.blog.csdn.net 答案】
+```
+PUT earthquakes_ext
+{
+  "mappings": {
+    "properties": {
+      "pt":{"type":"date"},
+      "magiitude":{"type":"integer"}
+    }
+  }
+}
+
+POST earthquakes_ext/_bulk
+{"index":{"_id":1}}
+{"pt":"2019-01-01T17:00:00", "magiitude":1}
+{"index":{"_id":2}}
+{"pt":"2019-01-01T20:00:00", "magiitude":3}
+{"index":{"_id":3}}
+{"pt":"2019-02-01T17:00:00", "magiitude":4}
+{"index":{"_id":3}}
+{"pt":"2019-02-20T17:00:00", "magiitude":5}
+{"index":{"_id":4}}
+{"pt":"2019-11-01T17:00:00", "magiitude":7}
+{"index":{"_id":5}}
+{"pt":"2019-11-01T17:00:00", "magiitude":8}
+{"index":{"_id":6}}
+{"pt":"2019-11-01T17:00:00", "magiitude":9}
+
+POST earthquakes_ext/_search
+{
+  "size": 0,
+  "aggs": {
+    "mag_over_time": {
+      "date_histogram": {
+        "field": "pt",
+        "calendar_interval": "month"
+      },
+      "aggs": {
+        "avg_mag": {
+          "avg": {
+            "field": "magiitude"
+          }
+        }
+      }
+    },
+    "max_monthly_mags": {
+      "max_bucket": {
+        "buckets_path": "mag_over_time>avg_mag"
+      }
+    }
+  }
+}
+```
 
 ## 4.2 Query Fileter Bucket Filter
  
