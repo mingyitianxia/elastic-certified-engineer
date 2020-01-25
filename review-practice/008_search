@@ -1,0 +1,303 @@
+# ** EXAM OBJECTIVE: QUERIES **
+# GOAL: Create search queries for analyzed text, highlight, 
+# pagination, and sort# REQUIRED SETUP: 
+# (i)  a running Elasticsearch cluster with at least one node and
+#      a Kibana instance,
+# (ii) add the "Sample web logs" and "Sample eCommerce orders" to 
+#      Kibana# Run the next queries on the `kibana_sample_data_logs` index
+
+
+#Let’s search the kibana_sample_data_logs index for logs that contain the string “Firefox” in their message. Because the data type of the message field is an analysed text, the standard query for performing full-text searches is the match query.
+# Search for documents with the `message` field containing the 
+#   string "Firefox"
+
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "match": {
+      "message": "Firefox"
+    }
+  }
+}
+
+What do you think would happen if you searched for “firefox” with a lowercase “f”? Nothing, right, because the standard analyzer applied to the message field will lowercase all tokens anyway.
+By default, a query response can include up to ten results. But what if you wanted to show up to 50 results? And then what if you wanted to fetch the next 50?
+# Search for documents with the `message` field containing the
+#   string "Firefox" and return (up to) 50 results. 
+# As above, but return up to 50 results with an offset of 50 from
+#   the first
+POST kibana_sample_data_logs/_search
+{
+  "from": 0,
+  "size":50,
+  "query": {
+    "match": {
+      "message": "Firefox"
+    }
+  }
+}
+
+POST kibana_sample_data_logs/_search
+{
+  "from": 50,
+  "size":50,
+  "query": {
+    "match": {
+      "message": "Firefox"
+    }
+  }
+}
+
+
+Deep pagination is highly inefficient when realised using the from and size parameters, as memory consumption and response time grow with the value of the parameters. The best practice is to use the search_after parameter instead.
+# Search for documents with the `message` field containing the 
+#   strings "Firefox" or "Kibana"
+
+GET kibana_sample_data_logs/_search
+{
+    "size": 10,
+     "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        }
+      ]
+    }
+  },
+    "sort": [
+        {"utc_time": "asc"}
+    ]
+}
+
+GET kibana_sample_data_logs/_search
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "utc_time": "asc"
+    },
+    {
+      "_id": "asc"
+    }
+  ]
+}
+
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "utc_time": "asc"
+    },
+    {
+      "_id": "asc"
+    }
+  ],
+  "search_after": [1578802692345, "gGMT3W8Bp5ks7v1ZFQ0c"]
+}
+
+
+# Search for documents with the `message` field containing both the 
+#   strings "Firefox" and "Kibana" 
+# Search for documents with the `message` field containing at least 
+#   two of the following strings: "Firefox", "Kibana", 
+#  "159.64.35.129"
+
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        }
+      ]
+    }
+  }
+}
+
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        },
+         {
+          "match": {
+            "message": "159.64.35.129"
+          }
+        }
+      ],
+      "minimum_should_match": 2
+    }
+  }
+}
+
+# Search for documents with the `message` field containing the 
+#   strings "Firefox" or "Kibana" 
+# As above, but also return the highlights for the `message` field
+# As above, but also wrap the highlights in "{{" and "}}"
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "message": "Firefox"
+          }
+        },
+        {
+          "match": {
+            "message": "Kibana"
+          }
+        }
+      ]
+    }
+  },
+  "highlight": {
+    "fields": {
+      "message": { "pre_tags" : ["{{"], "post_tags" : ["}}"]}
+    }
+  }
+}
+
+# Search for documents with the `message` field containing the
+#   phrase "HTTP/1.1 200 51"
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "message": "HTTP/1.1 200 51"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Search for documents with the `message` field containing the 
+#   phrase "HTTP/1.1 200 51", and sort the results by the 
+#   `machine.os` field in descending order
+# As above, but also sort the results by the `timestamp` field in ascending order
+
+GET kibana_sample_data_logs/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "message": "HTTP/1.1 200 51"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "machine.os.keyword": {
+        "order": "desc"
+      }
+    },
+    {
+      "timestamp": {
+        "order": "asc"
+      }
+    }
+  ]
+}
+
+
+
+### Run the next queries on the `kibana_sample_data_ecommerce` index
+# Search for documents with the `day_of_week` field containing the 
+#   string "Monday"
+# As above, but sort the results by the `products.base_price` field in descending order, picking the lowest value of the array
+
+GET kibana_sample_data_ecommerce/_search
+{
+   "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "day_of_week": "Monday"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "products.base_price": {
+        "order": "desc"
+      }
+    }
+  ]
+}
