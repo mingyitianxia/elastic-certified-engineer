@@ -6,7 +6,7 @@ https://www.elastic.co/cn/training/certification/faq
 
 ![1](imgs/deploy_001.png)
 ==
-![1](imgs/deploy_002.png)
+![1](imgs/deploy_001_02.png)
 ==
 ```
 PUT  earthquakes
