@@ -50,40 +50,71 @@ POST /earthquakes/_search
 ![1](imgs/deploy_002.png)
 ==
 ```
-PUT _ingest/pipeline/earthquakes_pipeline
+PUT task2
 {
-  "processors" : [
-   {
-  "uppercase": {
-    "field": "magnitude"
-  }
-},   {
-        "script": {
-             "lang": "painless",
-          "source": """
-           if (ctx.containsKey("batch_num") == true) {ctx.batch_num +=1}else {ctx.batch_num =1}
-          """
+  "mappings": {
+    "properties": {
+      "address": {
+        "properties": {
+          "city": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          },
+          "country": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          },
+          "state": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
         }
+      },
+      "comment": {
+        "type": "text",
+        "analyzer": "standard", 
+        "fields": {
+          "english": {
+            "type": "text",
+           "analyzer": "english"
+          },
+          "dutch": {
+            "type": "text",
+           "analyzer": "dutch"
+          }
+        }
+      },
+      "username": {
+        "type": "keyword"
       }
-  ]
-}
-
-
-PUT earthquakes
-POST earthquakes/_doc/1
-{
-  "cont":"1111",
-  "magnitude":"asdf"
-}
-
-POST earthquakes/_update_by_query?pipeline=earthquakes_pipeline
-{
-  "query":{
-    "match_all":{}
+    }
   }
 }
 
-GET earthquakes/_search
+POST task2/_doc/123
+{
+  "username":"",
+  "address":{
+    "city":"Mountain View",
+    "state":"California",
+    "country":"United States of America"
+  },
+  "comment":"To be prepare for the exam, you shoule be able to complete all the exam object"
+}
+
+GET task2/_mapping
 ```
 
 ### 4、查询实战题
