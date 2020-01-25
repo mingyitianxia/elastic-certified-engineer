@@ -30,6 +30,9 @@ node.ingest: false
 node.ml: false 
 cluster.remote.connect: false 
 
+discovery.seed_hosts: ["node1", "node2", "node3"]
+cluster.initial_master_nodes: ["node1"]
+
 #node3
 node.name: node3
 node.master: false 
@@ -37,6 +40,9 @@ node.data: false
 node.ingest: true 
 node.ml: false 
 cluster.remote.connect: false 
+
+discovery.seed_hosts: ["node1", "node2", "node3"]
+cluster.initial_master_nodes: ["node1"]
 ```
 
 ### 2、Mapping定义实战题
