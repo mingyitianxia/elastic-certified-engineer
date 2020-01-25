@@ -121,37 +121,36 @@ GET task2/_mapping
 ![1](imgs/deploy_003.png)
 ==
 ```
-POST movies/_search
+POST movie_data/_search
 {
   "query": {
     "bool": {
-      "must": [
+      "filter": [
         {
-          "match_phrase": {
-            "overview": "new york"
-          }
-        }
-      ],
-      "should": [
-        {
-          "match_phrase": {
-            "title": "new york"
+          "match": {
+            "tags": "based on comic book"
           }
         },
         {
-          "match_phrase": {
-            "tags": "new york"
-          }
-        },
-        {
-          "match_phrase": {
-            "tagline": "new york"
+          "match": {
+            "tags": "marvel cinematic universe"
           }
         }
-      ],
-      "minimum_should_match" : 1
+      ]
     }
-  }
+  },
+  "sort": [
+    {
+      "budget": {
+        "order": "desc"
+      }
+    },
+    {
+      "release_date": {
+        "order": "desc"
+      }
+    }
+  ]
 }
 ```
 
