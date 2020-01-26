@@ -1,0 +1,243 @@
+# ** EXAM OBJECTIVE: QUERIES **
+# GOAL: Create search queries for terms, numbers, dates, fuzzy, and 
+# compound queries
+# REQUIRED SETUP: 
+# (i) a running Elasticsearch cluster with at least one node and a 
+#     Kibana instance,  
+# (ii) add the "Sample web logs" and "Sample flight data" to Kibana### Run the next queries on the `kibana_sample_data_logs` index
+
+# Filter documents with the `response` field greater or equal to 400 
+#   and less than 500
+# As above, but add a second filter for documents with the `referer` 
+#   field matching "http://twitter.com/success/guion-bluford"
+
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "range": {
+            "response": {
+              "gte": 400,
+              "lte": 500
+            }
+          }
+        },
+        {
+          "term": {
+            "referer": "http://twitter.com/success/guion-bluford"
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+# Filter documents with the `referer` field that starts by 
+#   "http://twitter.com/success"
+# Filter documents with the `request` field that starts by "/people"
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "fuzzy": {
+            "referer": {
+              "value": "http://twitter.com/success"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "fuzzy": {
+            "referer": {
+              "value": "http://twitter.com/success"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Filter documents with the `memory` field containing any indexed 
+#   value
+# (opposite of above) Filter documents with the `memory` field not 
+#   containing any indexed value
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "exists": {
+          "field": "memory"
+        }
+      }
+    }
+  }
+}
+
+
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "must_not": {
+        "exists": {
+          "field": "memory"
+        }
+      }
+    }
+  }
+}
+
+
+# Search for documents with the `agent` field containing the string 
+#   "Windows" and the `url` field containing the string "name:john"
+# As above, but also filter documents with the `phpmemory` field 
+#   containing any indexed value
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "match": {
+            "agent": "Windows"
+          }
+        },
+        {
+          "match": {
+            "url": "name:john"
+          }
+        },
+          {
+          "exists": {
+            "field": "phpmemory"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Search for documents that have either the `response` field greater 
+#   or equal to 400 or the `tags` field having the string "error"
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "match": {
+            "tags": "error"
+          }
+        },
+        {
+          "range": {
+            "response": {
+              "gte": 400
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+# Search for documents with the `tags` field that does not contain 
+#   any of the following strings: "warning", "error", "info"
+POST kibana_sample_data_logs/_search
+{
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "match": {
+            "tags": "warning"
+          }
+        },
+        {
+           "match": {
+            "tags": "error"
+          }
+        },
+        {
+           "match": {
+            "tags": "info"
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+# Filter documents with the `timestamp` field containing a date 
+#   between today and one week ago
+GET kibana_sample_data_logs/_search
+{
+  "query": {
+    "range": {
+      "timestamp": {
+        "gte": "now-7d/d",
+        "lt": "now/d"
+      }
+    }
+  }
+}
+
+### Run the next queries on the `kibana_sample_data_flights` index
+# Filter documents with either the `OriginCityName` or the 
+#   `DestCityName` fields matching the string "Sydney"
+# As above, but allow inexact fuzzy matching, with a maximum allowed 
+#   “Levenshtein Edit Distance” set to 2. Test that the query 
+#   strings "Sydney", "Sidney" and "Sidnei" always return the same 
+#   number of results
+GET kibana_sample_data_flights/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "fuzzy": {
+            "OriginCityName": {
+              "value": "Sydney",
+              "fuzziness": "AUTO",
+              "max_expansions": 2,
+              "prefix_length": 0,
+              "transpositions": true,
+              "rewrite": "constant_score"
+            }
+          }
+        },
+        {
+          "fuzzy": {
+            "DestCityName": {
+              "value": "Sydney",
+              "fuzziness": "AUTO",
+              "max_expansions": 2,
+              "prefix_length": 0,
+              "transpositions": true,
+              "rewrite": "constant_score"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
