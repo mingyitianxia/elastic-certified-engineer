@@ -1,0 +1,250 @@
+# ** EXAM OBJECTIVE: AGGREGATIONS **
+# GOAL: Create metrics, bucket, and pipeline aggregations
+# REQUIRED SETUP: 
+# (i)  a running Elasticsearch cluster with at least one node and a 
+#      Kibana instance,
+# (ii) add the "Sample flight data" to Kibana
+### Run the next queries on the `kibana_sample_data_flights` index
+
+# Create an aggregation named "max_distance" that calculates the 
+#    maximum value of the `DistanceKilometers` field
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "max_distance": {
+      "max": {
+        "field":"DistanceKilometers"
+      }
+    }
+  }
+}
+
+
+
+# Create an aggregation named "stats_flight_time" that computes 
+#    stats over the value of the `FlightTimeMin` field
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "stats_flight_time": {
+      "stats": {
+        "field":"FlightTimeMin"
+      }
+    }
+  }
+}
+
+# Create two aggregations, named "cardinality_origin_cities" and 
+#    "cardinality_dest_cities", that count the distinct values of 
+#    the `OriginCityName` and `DestCityName` fields, respectively
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "cardinality_origin_cities": {
+      "cardinality": {
+        "field":"OriginCityName"
+      }
+    },
+    "cardinality_dest_cities": {
+      "cardinality": {
+        "field":"DestCityName"
+      }
+    }
+  }
+}
+
+
+# Create an aggregation named "popular_origin_cities" that 
+#   calculates the number of flights grouped by the 
+#   `OriginCityName` field
+# As above, but return only 5 buckets and in descending order
+GET kibana_sample_data_flights/_mapping
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "popular_origin_cities": {
+      "terms": {
+        "field": "OriginCityName",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+# Create an aggregation named "avg_price_histogram" that groups the 
+#   documents based on `AvgTicketPrice` by intervals of 250
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "avg_price_histogram": {
+      "histogram": {
+        "field": "AvgTicketPrice",
+        "interval": 250
+      }
+    }
+  }
+}
+
+# Create an aggregation named "popular_carriers" that calculates the 
+#   number of flights grouped by the `Carrier` field
+# Add a sub-aggregation to "popular_carriers", named 
+#   "carrier_stats_delay", that computes stats over the value of the 
+#   `FlightDelayMin` field for the related bucket of carriers
+# Add a second sub-aggregation to "popular_carriers", named 
+#   "carrier_max_delay", that shows the flight having the maximum 
+#   value of the `FlightDelayMin` field for the related bucket of 
+#   carriers
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "popular_carriers": {
+      "terms": {
+        "field": "Carrier"
+      },
+      "aggs": {
+        "carrier_stats_delay": {
+          "stats": {
+            "field": "FlightDelayMin"
+          }
+        },
+        "carrier_max_delay": {
+          "max": {
+            "field": "FlightDelayMin"
+          }
+        }
+      }
+    }
+  }
+}
+
+# Use the `timestamp` field to create an aggregation named 
+#   "flights_every_10_days" that groups the number of flights by an 
+#   interval of 10 days
+GET kibana_sample_data_flights/_mapping
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "flights_every_10_days": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "10d"
+      }
+    }
+  }
+}
+
+# Use the `timestamp` field to create an aggregation named 
+#   "flights_by_day" that groups  the number of flights by day 
+# Add a sub-aggregation to “flights_by_day”, named 
+#   “destinations_by_day”, that groups the day buckets by the value 
+#   of the `DestCityName` field
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "flights_by_day": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "1d"
+      },
+      "aggs": {
+        "destinations_by_day": {
+          "terms": {
+            "field": "DestCityName"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+# Add a sub-aggregation to the sub-aggregation 
+#   "destinations_by_day", named "popular_destinations_by_day", that 
+#   returns the 3 most popular documents for each bucket (i.e., 
+#   ordered by their score)
+# Update “popular_destinations_by_day” to display only the 
+#   `DestCityName` field in for each top hit object
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "flights_by_day": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "1d"
+      },
+      "aggs": {
+        "destinations_by_day": {
+          "terms": {
+            "field": "DestCityName"
+          },
+          "aggs": {
+            "popular_destinations_by_day": {
+              "top_hits": {
+                "size": 3,
+                "_source": {
+                  "includes": [
+                    "DestCityName"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+# Remove the "popular_destinations_by_day” sub-sub-aggregation from 
+#   “flights_by_day”
+# Add a pipeline aggregation to "flights_by_day", named 
+#   "most_popular_destination_of_the_day", that identifies the 
+#   "popular_destinations_by_day” bucket with the most documents for 
+#   each day
+# Add a pipeline aggregation named "day_with_most_flights" that 
+#   identifies the “flights_by_day” bucket with the most documents
+# Add a pipeline aggregation named 
+#   "day_with_the_most_popular_destination_over_all_days" that 
+#   identifies the “flights_by_day” bucket with the largest 
+#   “most_popular_destination_of_the_day” value
+
+POST kibana_sample_data_flights/_search
+{
+  "size": 0,
+  "aggs": {
+    "flights_by_day": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "1d"
+      },
+      "aggs": {
+        "destinations_by_day": {
+          "cardinality": {
+            "field": "DestCityName"
+          }
+        }
+      }
+    },
+    "most_popular_destination_of_the_day": {
+      "max_bucket": {
+        "buckets_path": "flights_by_day>destinations_by_day"
+      }
+    }
+  }
+}
+
+
+ 
