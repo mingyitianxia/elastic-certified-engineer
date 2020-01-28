@@ -1,0 +1,132 @@
+# ** EXAM OBJECTIVE: INSTALLATION AND CONFIGURATION **
+# GOAL: Secure a cluster and an index using Elasticsearch Security
+# REQUIRED SETUP:
+#  (i)  a running Elasticsearch cluster with at least one node and
+#       a Kibana instance,
+#  (ii) no index with name `hamlet` is indexed on the cluster
+
+# Enable xPack security on the cluster
+# Set the password of the `elastic` and `kibana` built-in users. Use
+#    the pattern "{{username}}-password" (e.g., "elastic-password")
+# Login to Kibana using the `elastic` user credentials
+
+
+We are now going to use the _bulk API to index some documents into the cluster. The documents are lines from Hamlet by William Shakespeare, and have the following structure:
+
+
+{
+  "line_number": "String",
+  "speaker": "String",
+  "text_entry": "String",
+}
+Let’s continue with the exercise.
+# Create the index `hamlet` and add some documents by running the
+#    following _bulk command:
+
+
+PUT hamlet/_bulk
+{"index":{"_index":"hamlet","_id":0}}
+{"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
+{"index":{"_index":"hamlet","_id":1}}
+{"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+{"index":{"_index":"hamlet","_id":2}}
+{"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+{"index":{"_index":"hamlet","_id":3}}
+{"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
+{"index":{"_index":"hamlet","_id":4}}
+{"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
+{"index":{"_index":"hamlet","_id":5}}
+{"line_number":"6","speaker":"FRANCISCO","text_entry":"You come most carefully upon your hour."}
+{"index":{"_index":"hamlet","_id":6}}
+{"line_number":"7","speaker":"BERNARDO","text_entry":"Tis now struck twelve; get thee to bed, Francisco."}
+{"index":{"_index":"hamlet","_id":7}}
+{"line_number":"8","speaker":"FRANCISCO","text_entry":"For this relief much thanks: tis bitter cold,"}
+{"index":{"_index":"hamlet","_id":8}}
+{"line_number":"9","speaker":"FRANCISCO","text_entry":"And I am sick at heart."}
+{"index":{"_index":"hamlet","_id":9}}
+{"line_number":"10","speaker":"BERNARDO","text_entry":"Have you had quiet guard?"}
+
+You can specify authentication (“who are you”) and authorisation (“what you can do”) policies on the Elasticsearch resources by means of users, roles, and mappings between users and roles. Do you know how to do that?
+
+
+# Create the security role `francisco_role` in the native realm, so #    that:
+#    (i)  the role has "monitor" privileges on the cluster,
+#    (ii) the role has all privileges on the `hamlet` index
+# Create the user `francisco` with password "francisco-password"
+# Assign the role `francisco_role` to the `francisco` user
+# Login using the `francisco` user credentials, and run queries on
+#    `hamlet` to verify that the role privileges were correctly set
+
+GET hamlet/_search
+PUT hamlet/_doc/1
+{"tesst":"1111"}
+DELETE hamlet
+GET _cat/indices
+DELETE .kibana
+
+
+Not bad, right? Now, let’s create a more sophisticated security role, which assigns read-only permissions on indices, documents and fields.
+#Create the security role `bernardo_role` in the native realm, so 
+#    that:
+#    (i)   the role has "monitor" privileges on the cluster,
+#    (ii)  the role has read-only privileges on the `hamlet` index,
+#    (iii) the role can see only those documents having "BERNARDO" 
+#          as a `speaker`,
+#    (iv)  the role can see only the `text_entry` field
+# Create the user `bernardo` with password "bernardo-password"
+# Assign the role `bernardo_role` to the `bernardo` user
+
+
+POST /_security/role/bernardo_role
+{
+  "run_as": [ "bernardo" ],
+  "cluster": [ "monitor" ],
+  "indices": [
+    {
+      "names": [ "hamlet" ],
+      "privileges": [ "read" ],
+      "field_security" : {
+         "grant" : [ "text_entry" ]
+      },
+       "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
+    }
+  ]
+}
+
+#may be error because of 'license'
+POST /_security/role/bernardo_role
+{
+  "indices": [
+    {
+      "names": [ "*" ],
+      "privileges": [ "read" ],
+      "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
+    }
+  ]
+}
+
+POST /_security/role/bernardo_role
+{
+  "indices": [
+    {
+      "names": [ "hamlet" ],
+      "privileges": [ "read" ],
+      "field_security" : {
+        "grant" : [ "text_entry" ]
+      }
+    }
+  ]
+}
+
+
+# Login using the `bernardo` user credentials, and run queries on 
+#    `hamlet` to verify that the role privileges were correctly set
+Whoops, I asked you to assign the wrong password to the “bernardo” user. My bad. Would you be so kind as to change it?
+
+
+# Change the password of the `bernardo` user to "poor-bernardo"
+(Never forget to check if it worked!)
+
+
+
+
