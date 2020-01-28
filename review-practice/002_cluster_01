@@ -1,0 +1,208 @@
+# ** EXAM OBJECTIVE: CLUSTER ADMINISTRATION **
+# GOAL: Allocate the shards in a way that satisfies a given set of
+#       requirements
+# REQUIRED SETUP: /
+
+# Download the exam version of Elasticsearch
+# Deploy the cluster `eoc-06-cluster`, with three nodes named 
+#    `node1`, `node2`, and `node3`
+# Configure the Zen Discovery module of each node so that they can 
+#    communicate
+# Start the cluster
+
+
+# Create the index `hamlet-1` with two primary shards and one 
+#    replica
+# Add some documents to `hamlet-1` by running the command below 
+
+PUT hamlet-1/_doc/_bulk
+{"index":{"_index":"hamlet-1","_id":0}}  
+{"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
+{"index":{"_index":"hamlet-1","_id":1}} 
+{"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+{"index":{"_index":"hamlet-1","_id":2}}
+{"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+{"index":{"_index":"hamlet-1","_id":3}}
+{"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
+{"index":{"_index":"hamlet-1","_id":4}}
+{"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
+
+# Create the index `hamlet-2` with two primary shard and one replica
+# Add some documents to `hamlet-2` by running the command below
+
+PUT hamlet-2/_doc/_bulk
+{"index":{"_index":"hamlet-2","_id":5}}
+{"line_number":"6","speaker":"FRANCISCO","text_entry":"You come most carefully upon your hour."}
+{"index":{"_index":"hamlet-2","_id":6}}
+{"line_number":"7","speaker":"BERNARDO","text_entry":"Tis now struck twelve; get thee to bed, Francisco."}
+{"index":{"_index":"hamlet-2","_id":7}}
+{"line_number":"8","speaker":"FRANCISCO","text_entry":"For this relief much thanks: tis bitter cold,"}
+{"index":{"_index":"hamlet-2","_id":8}}
+{"line_number":"9","speaker":"FRANCISCO","text_entry":"And I am sick at heart."}
+{"index":{"_index":"hamlet-2","_id":9}}
+{"line_number":"10","speaker":"BERNARDO","text_entry":"Have you had quiet guard?"}
+
+
+# Check that the replicas of indices `hamlet-1` and `hamlet-2` have 
+#    been allocated 
+
+GET /_cat/allocation?v
+GET /_cluster/allocation/explain
+GET _cat/nodeattrs
+
+GET a_index/_settings
+DELETE a_index
+DELETE b_index
+
+GET _cat/shards
+
+# Check the distribution of primary shards and replicas of indices
+#    `hamlet-1` and `hamlet-2` across the nodes of the cluster
+GET _cat/shards
+GET _cat/shards/ham*?v
+
+
+
+# Configure `hamlet-1` to allocate both primary shards to `node2`, 
+#    using the node name
+# Verify the success of the last action by using the _cat API
+GET hamlet-1/_settings
+DELETE hamlet-1
+PUT hamlet-1
+{
+  "settings": {
+    "index.routing.allocation.include._name": "node-2"
+  }
+}
+
+GET _cat/shards
+
+
+
+# Configure `hamlet-2` so that no primary shard is allocated to 
+#    `node3`
+# Verify the success of the last action by using the _cat API
+DELETE hamlet-2
+PUT hamlet-2
+{
+  "settings": {
+    "index.routing.allocation.exclude._name": "node-3"
+  }
+}
+GET _cat/shards
+
+
+# Remove any allocation filter setting associated with `hamlet-1` 
+#    and `hamlet-2`
+PUT hamlet-1/_settings
+{
+    "index.routing.allocation.include._name": null
+}
+GET  hamlet-1/_settings
+
+PUT hamlet-2/_settings
+{
+    "index.routing.allocation.exclude._name": null
+}
+
+
+# Let's assume that we deployed the `eoc-06-cluster` cluster across
+#    two availability zones, named `earth` and `mars`. Add the
+#    attribute `AZ` to the nodes configuration, and set its value
+#    to "earth" for `node1` and `node2`, and to "mars" for `node3`
+# Restart the cluster
+# Configure the cluster to force shard allocation awareness based on 
+#    the two availability zones, and persist such configuration
+#    across cluster restarts
+# Verify the success of the last action by using the _cat API
+
+##
+node.attr.rack_id: earth
+node.name=node1
+node.name=node2
+
+##
+node.attr.rack_id: mars
+node.name=node3
+
+cluster.routing.allocation.awareness.attributes: rack_id
+#enhance
+cluster.routing.allocation.awareness.force.zone.values: earth,mars 
+
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "cluster.routing.allocation.awareness.attributes": "rack_id"
+    }
+}
+
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "cluster.routing.allocation.awareness.attributes": null
+    }
+}
+
+
+
+# Configure the cluster to reflect a hot/warm architecture, with 
+#    `node1` as the only hot node
+# Configure the `hamlet-1` index to allocate its shards only to warm 
+#    nodes
+# Verify the success of the last action by using the _cat API \
+
+##node-1
+node.attr.hot_warm_type: hot
+
+##node-2
+node.attr.hot_warm_type: warm
+
+DELETE hamlet-1
+PUT hamlet-1
+{
+  "settings": {
+    "index.routing.allocation.include.hot_warm_type": "warm"
+  }
+}
+
+GET _cat/shards
+
+
+
+# Remove the hot/warm shard filtering configuration from the 
+#    `hamlet-1` configuration
+PUT hamlet-1/_settings
+{
+    "index.routing.allocation.include.hot_warm_type": null
+}
+GET _cat/shards
+
+# Let's assume that the nodes have either a "large" or "small" local 
+#    storage. Add the attribute `storage` to the nodes config, and 
+#    set its value so that `node2` is the only with a "small"
+#    storage
+
+##node-1
+node.attr.storage: large
+
+##node-2
+node.attr.storage: small
+
+GET _cat/shards
+
+# Configure the `hamlet-2` index to allocate its shards only to 
+#   nodes with a large storage size
+# Verify the success of the last action by using the _cat API
+PUT hamlet-2
+{
+  "settings": {
+    "index.routing.allocation.include.storage": "large"
+  }
+}
+
+GET _cluster/allocation/explain
+
+GET _cat/shards
+GET _cat/nodeattrs?v
+
+
