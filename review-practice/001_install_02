@@ -128,5 +128,8 @@ Whoops, I asked you to assign the wrong password to the “bernardo” user. My 
 (Never forget to check if it worked!)
 
 
-
+POST /_security/user/bernardo/_password
+{
+  "password" : "123456"
+}
 
