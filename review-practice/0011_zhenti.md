@@ -206,3 +206,69 @@ POST movies/_search
 }
 ```
 https://github.com/linuxacademy/content-elastic-certified-engineer/tree/master/sample_data
+
+
+### 5、有index_a包含一些文档， 要求创建索引index_b，通过reindex api将index_a的文档索引到index_b。
+要求增加一个整形字段，value是index_a的field_x的字符长度； 再增加一个数组类型的字段，value是field_y的词集合。
+
+(field_y是空格分割的一组词，比方"foo bar"，索引到index_b后，要求变成["foo", "bar"]。
+
+```
+PUT index_a
+{
+  "mappings": {
+    "properties": {
+      "title":{
+        "type":"keyword"
+      }
+    }
+  }
+}
+
+
+POST index_a/_bulk
+{"index":{"_id":1}}
+{"title":"foo bar"}
+
+PUT _ingest/pipeline/a_pipeline
+{
+  "processors": [
+    {
+      "script": {
+        "source": "ctx.length = ctx.title.length();"
+      }
+    },
+    {
+      "split": {
+        "field": "title",
+        "separator": " "
+      }
+    }
+  ]
+}
+
+
+PUT index_b
+{
+  "mappings": {
+    "properties": {
+      "title":{
+        "type":"keyword"
+      }
+    }
+  }
+}
+
+POST _reindex
+{
+  "source": {
+    "index": "index_a"
+  },
+  "dest": {
+    "index": "index_b",
+    "pipeline": "a_pipeline"
+  }
+}
+
+GET index_b/_search
+```
