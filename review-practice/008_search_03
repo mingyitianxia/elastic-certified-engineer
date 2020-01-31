@@ -138,12 +138,12 @@ GET _render/template
 
 
 
-#good_caution:with_max_response has bugs
+#good_caution:注意标点符号的使用，否则会报错
 POST _scripts/with_response_and_tag
 {
   "script": {
     "lang": "mustache",
-    "source": "{\"qury\": {\"bool\": {\"filter\": [  {\"range\": {\"response\": {\"gte\": \"{{with_min_response}}\",{{#with_max_response}} \"lte\": \"{{with_max_response}}\" {{/with_max_response}}}}}, { {{#with_tag}}\"match\": {\"tags\":\"{{with_tag}}\"}  {{/with_tag}}}]}}}"
+    "source": "{\"query\": {\"bool\": {\"filter\": [{\"range\": {\"response\": {\"gte\": \"{{with_min_response}}\"{{#end}},{{/end}}{{#with_max_response}} \"lte\": \"{{with_max_response}}\"{{/with_max_response}} }}},{ {{#with_tag}}\"match\": {  \"tags\": \"{{with_tag}}\"}{{/with_tag}}}] }}}"
   }
 }
 
