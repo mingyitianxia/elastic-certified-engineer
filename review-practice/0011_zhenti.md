@@ -2,29 +2,76 @@
 https://elasticsearch.cn/article/13530
 
 ```
-PUT test002
+PUT my_index
 {
-  "mapping":{
-   "Properties":{
-     "title":{
-       "type":"text",
-       "analyzer":"simple"
-     }
-   }   
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer": {
+          "type": "custom",
+          "char_filter": [
+            "emoticons"
+          ],
+          "tokenizer": "standard"
+        }
+      },
+      "char_filter": {
+        "emoticons": {
+          "type": "mapping",
+          "mappings": [
+            "' => "
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "my_custom_analyzer"
+      }
+    }
   }
 }
 
-POST test002/_bulk
+POST my_index/_bulk
 {"index":{"_id":1}}
-{"title":"king's"}
-{"index":{"_id":2}}
 {"title":"kings"}
+{"index":{"_id":2}}
+{"title":"king's"}
 
-POST test002/_msearch
-{}
-{"query":{"match_phrase":{"title":"kings"}}}
-{}
-{"query":{"match_phrase":{"title":"king's"}}}
+GET my_index/_search
+{
+  "query": {
+    "match": {
+      "title": "kings"
+    }
+  }
+}
+
+GET my_index/_search
+{
+  "query": {
+    "match": {
+      "title": "king's"
+    }
+  }
+}
+
+
+
+GET my_index/_analyze
+{
+  "text": "kings",
+  "analyzer": "my_custom_analyzer"
+}
+
+GET my_index/_analyze
+{
+  "text": "king's",
+  "analyzer": "my_custom_analyzer"
+}
 ```
 
 ### 2、有一个文档，内容类似dog & cat， 要求索引这条文档，并且使用match_phrase query，查询dog & cat或者dog and cat都能match。
