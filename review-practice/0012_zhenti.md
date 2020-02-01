@@ -928,12 +928,41 @@ GET /orders,cluster_two:orders/_search
 
 ## 6.3 解决集群变红或者变黄的问题
 - 技能1：通过 explain API 查看
+
 - 技能2：shard filtering API，查看 include
+
+```
+2.1 查看集群状态
+GET _cluster/health
+
+返回状态举例： "status" : "red", 红色，至少一个主分片未分配成功。
+
+2.2 到底哪个节点出现了红色或者黄色问题呢？
+GET _cluster/health?level=indices
+
+如下的方式，更明快直接
+GET /_cat/indices?v&health=yellow
+GET /_cat/indices?v&health=red
+
+找到对应的索引。
+
+2.3 到底索引的哪个分片出现了红色或者黄色问题呢？
+
+GET _cluster/health?level=shards
+
+2.4 到底什么原因导致了集群变成红色或者黄色呢？
+GET _cluster/allocation/explain
+
+```
+
 - 技能3： 更新一下 routing，确认 replica 可以分配（include 更加多的 rack）
 - 解决方案
  （1）为集群配置延迟分配和一个节点上最多几个分片的配置
+ 
  （2）设置 Replica 为 0
+ 
  （3）删除 dangling index
+ 
  （4）使用了错误的 routing node attribute
  
 ## 6.4 备份一个集群中指定的几个索引
