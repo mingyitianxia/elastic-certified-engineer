@@ -124,6 +124,74 @@ POST whitespace_example/_msearch
 {}
 {"query":{"match_phrase":{"title":"dog and cat"}}}
 ```
+
+#### 2.1 方法2解读
+```
+PUT /test_index009
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "synonym": {
+            "tokenizer": "whitespace",
+            "filter": [
+              "synonym"
+            ]
+          }
+        },
+        "filter": {
+          "synonym": {
+            "type": "synonym",
+            "lenient": true,
+            "synonyms": [
+              "& => and"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title":{
+        "type":"text",
+        "analyzer": "synonym"
+      }
+    }
+  }
+}
+
+POST test_index009/_bulk
+{"index":{"_id":1}}
+{"title":"dog & cat"}
+{"index":{"_id":2}}
+{"title":"dog and cat"}
+
+POST test_index009/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "dog & cat"
+    }
+  }
+}
+
+POST test_index009/_search
+{
+  "query": {
+    "match_phrase": {
+      "title": "dog and cat"
+    }
+  }
+}
+
+GET test_index009/_analyze
+{
+  "field": "title",
+  "text": ["dog & cat", "dog and cat"]
+}
+```
 ### 3、问题1，问题2小结
 #### Simple Analyzer – 按照非字母切分（符号被过滤），小写处理
 #### Stop Analyzer – 小写处理，停用词过滤（the，a，is）
