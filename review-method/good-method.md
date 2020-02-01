@@ -36,3 +36,21 @@ https://elasticsearch.cn/article/13530
 
 ### 7、wood 大叔经验
 https://elasticsearch.cn/article/6133
+
+### 8、魏彬大神考试经验分享视频地址
+https://v.qq.com/x/page/f073779epxd.html
+
+### 10、国外大佬的Elastic认证经验帖：
+https://www.reddit.com/r/elasticsearch/comments/ddeewi/elasticsearch_certification/
+
+https://paulsalaets.com/posts/elastic-exam-prep/ 
+
+### 11、elasticsearch认证考试指南——外国大佬怎么说
+
+https://whatgeorgemade.com/posts/elastic-certified-engineer/
+
+https://medium.com/kreuzwerker-gmbh/elastic-certified-engineer-exam-what-to-expect-and-how-to-rock-it-cf409ed48d7b
+
+https://discuss.elastic.co/t/dec-23th-2019-fr-certification-5-choses-que-jaurais-aime-apprendre-du-pere-noel-avant-de-passer-la-certification-elastic-engineer/212079
+
+
