@@ -309,7 +309,7 @@ PUT _ingest/pipeline/my_pipeline_id
     {
       "split": {
         "field": "horry",
-        "separator": ";"
+        "separator": "\\;"
       }
     },
     {
@@ -376,7 +376,7 @@ PUT _ingest/pipeline/my_pipeline_002
     {
   "script": {
     "lang": "painless",
-    "source": "if(!ctx.containsKey(\"batch_number\")) {ctx.batch_number = 1} else {ctx.batch_number+=1}"
+    "source": "if(ctx.containsKey('batch_number')) {ctx.batch_number+=1;} else {ctx.batch_number=1;}"
     }
   }
   ]
@@ -418,10 +418,7 @@ PUT _ingest/pipeline/newadd_pipeline
     {
       "script": {
         "lang": "painless",
-        "source": "ctx.newadd = (ctx.value01 + ctx.value02 + ctx.value03)",
-        "params": {
-          "param_c": 10
-        }
+        "source": "ctx.newadd = (ctx.value01 + ctx.value02 + ctx.value03)"
       }
     }
   ]
