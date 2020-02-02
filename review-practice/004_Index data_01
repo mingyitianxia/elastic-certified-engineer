@@ -150,22 +150,6 @@ GET hamlet-raw/_search
 GET _scripts/set_is_hamlet
 DELETE _scripts/set_is_hamlet
 
-POST _scripts/set_is_hamlet
-{
-   "script": {
-    "lang": "painless",
-    "source": """
-     if (ctx._source.speaker == "HAMLET") { 
-       ctx._source.is_hamlet = true;
-     } else 
-     {
-       ctx._source.is_hamlet = false;
-     } 
-"""
-  }
-}
-
-
 # this is ok
 POST hamlet-raw/_update_by_query
 {
@@ -190,31 +174,27 @@ POST hamlet-raw/_doc
 
 GET hamlet-raw/_search
 
-GET hamlet-raw/_search
+PUT _ingest/pipeline/set_is_hamlet
 {
-  "query": {
-    "script": {
-      "script": {
-        "id": "set_is_hamlet"
+    "processors": [
+      {
+        "script": {
+          "source": """
+            if (ctx.speaker_method2 == 'Hamlet') { ctx.is_hamlet = true; } else  { ctx.is_hamlet = false;}
+          """
+        }
       }
-    }
+    ]
+}
+
+POST hamlet-raw/_update_by_query?pipeline=set_is_hamlet
+{
+  "query":{
+    "match_all":{}
   }
 }
 
-# bug
-GET _search
-{
-  "query": {
-    "script": {
-      "script": {
-        "id": "calculate-score",
-        "params": {
-          "my_modifier": 2
-        }
-      }
-    }
-  }
-}
+
 
 
 # 8 Remove from `hamlet` the documents that have either "KING 
