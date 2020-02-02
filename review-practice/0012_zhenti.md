@@ -160,7 +160,7 @@ PUT index001
       {
         "longs_as_strings": {
           "match_mapping_type": "string",
-          "unmatch": "int_*",
+          "unmatch": "text_*",
           "mapping": {
             "type": "keyword"
           }
