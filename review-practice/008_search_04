@@ -1,0 +1,55 @@
+#某索引index_a有多个字段，
+
+#要求实现如下的查询：
+#1）针对字段title，满足'ssas'或者'sasa',至少一个满足
+#2）针对字段tags（数组字段），如果b字段包含'pingpang',则提升评分。
+
+PUT index_a/_bulk
+{"index":{"_id":1}}
+{"title":"ssas is very nb", "tags":["pingpang", "basketball"]}
+{"index":{"_id":2}}
+{"title":"which is sasa","tags":["football"]}
+{"index":{"_id":3}}
+{"title":"which is ssas","tags":["basktball","football"]}
+{"index":{"_id":4}}
+{"title":"just for testing", "tags":["pingpang"]}
+{"index":{"_id":5}}
+{"title":"just for testing", "tags":["basketball"]}
+{"index":{"_id":6}}
+{"title":"just for testing", "tags":["football"]}
+
+# 方法1
+POST index_a/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "tags": {
+              "query": "pingpang",
+              "boost": 2
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match": {
+                  "title": "ssas"
+                }
+              },
+              {
+                "match": {
+                  "title": "sasa"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ]
+    }
+  }
+}
