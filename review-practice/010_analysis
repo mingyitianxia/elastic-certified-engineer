@@ -1,0 +1,135 @@
+# 同义词过滤 使用demo 
+
+ PUT test_004/_bulk
+ {"index":{"_id":1}}
+ {"title":"oa is very good"}
+ {"index":{"_id":2}}
+ {"title":"oA is very good"}
+ {"index":{"_id":3}}
+ {"title":"OA is very good"}
+ {"index":{"_id":4}}
+ {"title":"dingding is very good"}
+ {"index":{"_id":5}}
+ {"title":"dingding is ali software"}
+ {"index":{"_id":6}}
+ {"title":"0A is very good"}
+ # return 2
+ POST test_004/_search
+ {
+   "query": {
+     "match": {
+       "title": "dingding"
+     }
+   }
+ }
+
+POST test_004/_search
+{
+  "query": {
+    "match": {
+      "title": "OA"
+    }
+  }
+}
+
+POST task_005/_search
+{
+  
+}
+
+PUT task1
+{
+  "mappings": {
+    
+  }
+}
+
+DELETE task1
+PUT /task1
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "synonym": {
+            "tokenizer": "standard",
+            "filter": [
+              "synonym"
+            ]
+          }
+        },
+        "filter": {
+          "synonym": {
+            "type": "synonym",
+            "lenient": true,
+            "synonyms": [
+              "oa, oA, Oa, OA, 0A => dingding"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title":{
+        "type": "text", 
+        "analyzer": "synonym"
+      }
+    }
+  }
+}
+
+POST _reindex
+{
+  "source": {
+    "index": "test_004"
+  },
+  "dest": {
+    "index": "task1"
+  }
+}
+GET task1/_mapping
+
+POST task1/_analyze
+{
+  "analyzer": "synonym",
+  "text":"oa OA is good software"
+}
+
+POST task1/_analyze
+{
+  "analyzer": "synonym",
+  "text":"dingding is good software"
+}
+
+# return 6
+GET task1/_search
+{
+  "profile": "true", 
+  "query": {
+    "match": {
+      "title": "dingding"
+    }
+  }
+}
+
+# return 6
+GET task1/_search
+{
+  "query": {
+    "match": {
+      "title": "oA"
+    }
+  }
+}
+
+# return 6
+GET task1/_search
+{
+  "query": {
+    "match": {
+      "title": "0A"
+    }
+  }
+}
