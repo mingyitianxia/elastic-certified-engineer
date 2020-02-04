@@ -1,6 +1,5 @@
-# 同义词过滤 使用demo 
-
- PUT test_004/_bulk
+# 同义词过滤 核心demo
+PUT test_004/_bulk
  {"index":{"_id":1}}
  {"title":"oa is very good"}
  {"index":{"_id":2}}
@@ -32,27 +31,17 @@ POST test_004/_search
   }
 }
 
-POST task_005/_search
-{
-  
-}
 
-PUT task1
-{
-  "mappings": {
-    
-  }
-}
-
-DELETE task1
-PUT /task1
+DELETE task2
+# 同义词的设置最核心
+PUT /task2
 {
   "settings": {
     "index": {
       "analysis": {
         "analyzer": {
           "synonym": {
-            "tokenizer": "standard",
+            "tokenizer": "whitespace",
             "filter": [
               "synonym"
             ]
@@ -63,7 +52,7 @@ PUT /task1
             "type": "synonym",
             "lenient": true,
             "synonyms": [
-              "oa, oA, Oa, OA, 0A => dingding"
+              "oa, oA, Oa, OA, 0A, dingding"
             ]
           }
         }
@@ -89,24 +78,18 @@ POST _reindex
     "index": "task1"
   }
 }
-GET task1/_mapping
 
-POST task1/_analyze
-{
-  "analyzer": "synonym",
-  "text":"oa OA is good software"
-}
+GET task2/_mapping
 
-POST task1/_analyze
+POST task2/_analyze
 {
   "analyzer": "synonym",
   "text":"dingding is good software"
 }
 
 # return 6
-GET task1/_search
+GET task2/_search
 {
-  "profile": "true", 
   "query": {
     "match": {
       "title": "dingding"
@@ -115,7 +98,7 @@ GET task1/_search
 }
 
 # return 6
-GET task1/_search
+GET task2/_search
 {
   "query": {
     "match": {
@@ -125,7 +108,7 @@ GET task1/_search
 }
 
 # return 6
-GET task1/_search
+GET task2/_search
 {
   "query": {
     "match": {
