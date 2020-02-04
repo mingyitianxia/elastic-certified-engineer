@@ -1,0 +1,36 @@
+# pipeline 中 对数组类型的实战举例
+
+POST test_005/_bulk
+{"index":{"_id":1}}
+{"tags":["ping pang", "basket ball", " foot bool "]}
+{"index":{"_id":2}}
+{"tags":[" ping pang ", "gof bal"]}
+
+GET test_005/_search
+
+PUT _ingest/pipeline/trim_pipeline
+{
+  "processors": [
+    {
+      "foreach": {
+        "field": "tags",
+        "processor": {
+          "trim": {
+            "field": "_ingest._value"
+          }
+        }
+      }
+    }
+  ]
+}
+
+
+DELETE task6
+PUT task6
+POST _reindex
+{
+  "source": {"index":"test_005"},
+  "dest":{"index":"task6", "pipeline": "trim_pipeline"}
+}
+
+GET task6/_search
