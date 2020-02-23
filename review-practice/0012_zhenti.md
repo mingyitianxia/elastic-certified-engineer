@@ -118,6 +118,7 @@ PUT a_index
 {
   "settings": {
     "index.routing.allocation.include.size": "big"
+    "index.number_of_replicas":0
   }
 }
 
