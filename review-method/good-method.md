@@ -54,3 +54,8 @@ https://medium.com/kreuzwerker-gmbh/elastic-certified-engineer-exam-what-to-expe
 https://discuss.elastic.co/t/dec-23th-2019-fr-certification-5-choses-que-jaurais-aime-apprendre-du-pere-noel-avant-de-passer-la-certification-elastic-engineer/212079
 
 
+### 12、潜心一技、做到极致！——Elastic认证工程师之路
+https://blog.csdn.net/laoyang360/article/details/104205108
+
+### 13、95后运维小哥20天+通过Elastic认证工程师经验贴
+https://mp.weixin.qq.com/s/9uZjEvK_nLGvziLoZ4O58w
