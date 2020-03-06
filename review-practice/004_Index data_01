@@ -105,6 +105,31 @@ GET hamlet-raw/_search
 # Update the document with id "1" by renaming the field `line` into 
 #    `text_entry`
 
+PUT _ingest/pipeline/rename_pipeline
+{
+  "processors": [
+    {
+      "rename": {
+        "field": "line",
+        "target_field": "text_entry"
+      }
+    }
+  ]
+}
+
+POST hamlet-raw/_update_by_query?pipeline=rename_pipeline
+{
+  "query":{
+    "term":{
+      "_id":1
+    }
+  }
+}
+
+
+GET hamlet-raw/_search
+
+
 # 7
 # Create the index `hamlet` and add some documents by running the 
 #    following _bulk commandPUT 
