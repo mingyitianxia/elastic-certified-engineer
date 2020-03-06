@@ -178,6 +178,7 @@ PUT _ingest/pipeline/split_act_scene_line
   ]
 }
 
+//感谢：https://t.zsxq.com/7EQJ2fm hello郎 提出的bug
 POST _ingest/pipeline/_simulate
 {
   "pipeline" : {
@@ -188,7 +189,34 @@ POST _ingest/pipeline/_simulate
         "field": "line_number",
         "separator": "\\."
       }
-    }
+    },
+    {
+      "set": {
+        "field": "number_act",
+        "value": "{{line_number.0}}"
+      }
+    },
+     {
+      "set": {
+        "field": "number_scene",
+        "value": "{{line_number.1}}"
+      }
+    },
+     {
+      "set": {
+        "field": "number_line",
+        "value": "{{line_number.2}}"
+      }
+    },
+     {
+        "script": {
+          "source": """
+            ctx.a1 = ctx.line_number.0;
+            ctx.a2 = ctx.line_number.1;
+            ctx.a3 = ctx.line_number.2;
+          """
+        }
+      }
   ]
   },
   "docs" : [
