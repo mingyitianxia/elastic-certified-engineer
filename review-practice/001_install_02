@@ -93,6 +93,14 @@ POST /_security/role/bernardo_role
   ]
 }
 
+POST /_security/user/bernardo
+{
+  "password" : "bernardo-password",
+  "roles" : [ "bernardo_role"],
+  "full_name" : "Jack Nicholson",
+  "email" : "test@example.com"
+}
+
 #may be error because of 'license'
 POST /_security/role/bernardo_role
 {
