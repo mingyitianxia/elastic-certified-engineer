@@ -59,3 +59,6 @@ https://blog.csdn.net/laoyang360/article/details/104205108
 
 ### 13、95后运维小哥20天+通过Elastic认证工程师经验贴
 https://mp.weixin.qq.com/s/9uZjEvK_nLGvziLoZ4O58w
+
+### 14、美国工程师的认证经历（参加过官方培训）
+https://medium.com/ableneo/elastic-certified-engineer-exam-92260e9dabca
