@@ -167,6 +167,31 @@ PUT hamlet_3/_doc/3?routing=c1&refresh
   }
 }
 
+PUT _ingest/pipeline/update-character
+{
+    "processors": [
+      {
+        "script": {
+          "source": """
+            ctx.line_number = '1.3.27';
+            ctx.character_or_line.name = 'line';
+            ctx.character_or_line.parent = 'c1';
+          """
+        }
+      }
+    ]
+}
+
+POST hamlet_3/_update_by_query?routing=c1&pipeline=update-character
+{
+  "query":{
+    "term":{
+      "_id":"3"
+    }
+  }
+}
+
+GET hamlet_3/_search
 
 //the below use is error, needed to update for future 20191103---- begin-------------------------------------
 PUT my_index/_doc/3?routing=1&refresh 
