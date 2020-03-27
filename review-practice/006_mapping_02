@@ -149,7 +149,26 @@ POST _reindex
 
 POST hamlet_3/_search
 
-//the below use is error, needed to update for future 20191103
+PUT hamlet_3/_doc/c1?refresh
+{
+  "text":"King Claudius",
+  "character_or_line": "character" 
+}
+
+
+PUT hamlet_3/_doc/3?routing=c1&refresh
+{
+  "line_number": "1.2.1",
+  "speaker": "KING CLAUDIUS",
+  "text_entry": "Though yet of Hamlet our dear brothers death",
+  "character_or_line": {
+    "name": "line",
+    "parent": "c1"
+  }
+}
+
+
+//the below use is error, needed to update for future 20191103---- begin-------------------------------------
 PUT my_index/_doc/3?routing=1&refresh 
 {
   "text": "This is an answer",
@@ -260,4 +279,4 @@ GET hamlet_3/_search
         "match": { "name": "HAMLET" }
       }
 }}}
-
+//the above use is error, needed to update for future 20191103---- end-------------------------------------
