@@ -127,7 +127,7 @@ node.name=node3
 
 cluster.routing.allocation.awareness.attributes: AZ
 #enhance
-cluster.routing.allocation.awareness.force.zone.values: earth,mars 
+cluster.routing.allocation.awareness.force.AZ.values: earth,mars 
 
 PUT /_cluster/settings
 {
