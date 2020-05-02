@@ -117,22 +117,22 @@ PUT hamlet-2/_settings
 # Verify the success of the last action by using the _cat API
 
 ##
-node.attr.rack_id: earth
+node.attr.AZ: earth
 node.name=node1
 node.name=node2
 
 ##
-node.attr.rack_id: mars
+node.attr.AZ: mars
 node.name=node3
 
-cluster.routing.allocation.awareness.attributes: rack_id
+cluster.routing.allocation.awareness.attributes: AZ
 #enhance
 cluster.routing.allocation.awareness.force.zone.values: earth,mars 
 
 PUT /_cluster/settings
 {
     "persistent" : {
-        "cluster.routing.allocation.awareness.attributes": "rack_id"
+        "cluster.routing.allocation.awareness.attributes": "AZ"
     }
 }
 
