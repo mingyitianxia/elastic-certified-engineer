@@ -354,6 +354,12 @@ PUT _ingest/pipeline/a_pipeline
       }
     },
     {
+    "set": {
+    "field": "split_title",
+    "value": "{{title}}"
+      }
+   },
+    {
       "split": {
         "field": "title",
         "separator": " "
