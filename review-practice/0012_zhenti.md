@@ -154,19 +154,11 @@ GET _cat/shards?v
 
 【铭毅天下 elastic.blog.csdn.net 答案】
 ```
-PUT index001
+DELETE index0008
+PUT index0008
 {
   "mappings": {
     "dynamic_templates": [
-      {
-        "longs_as_strings": {
-          "match_mapping_type": "string",
-          "unmatch": "text_*",
-          "mapping": {
-            "type": "keyword"
-          }
-        }
-      },
       {
         "longs_as_strings": {
           "match":   "int_*",
@@ -174,12 +166,20 @@ PUT index001
             "type": "integer"
           }
         }
+      },
+      {
+        "longs_as_strings": {
+          "match_mapping_type": "string",
+          "mapping": {
+            "type": "keyword"
+          }
+        }
       }
     ]
   }
 }
 
-POST index001/_bulk
+POST index0008/_bulk
 {"index":{"_id":1}}
 {"cont":"你好我好铭毅天下好", "int_value":35}
 {"index":{"_id":2}}
@@ -187,7 +187,7 @@ POST index001/_bulk
 {"index":{"_id":3}}
 {"cont":"铭毅好", "int_value":35}
 
-GET index001/_mapping
+GET index0008/_mapping
 ```
 ## 2.2 设置一个Index Template，符合以下的要求
 - 为 log 和log- 开头的索引。创建 3 个主分片，1 个副本分片
