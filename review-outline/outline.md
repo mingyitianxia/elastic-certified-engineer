@@ -1,3 +1,27 @@
+# 2020-06 考试真题
+
+### 1,sharding awarness，保持cluster健康
+
+### 2,先自定义分词，再reIndex，保证kings和king's评分一样
+
+### 3,先netsted字段定义，再reIndex， 最后netsted查询
+
+### 4,multi_match和most——filed
+
+### 5,RBAC
+
+### 6,update_by_query, 多个字段concat
+
+### 7,先date_histogram, 再max depth
+
+### 8,生成快照
+
+### 9,dynamic mapping
+
+### 10,query、highlight、 sort
+
+来源：死磕Elasticsearch 知识星球 https://t.zsxq.com/Z7yZBEM
+
 # 2019-11月考试真题
 
 考察点主要包括：
