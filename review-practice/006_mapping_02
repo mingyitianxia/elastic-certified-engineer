@@ -206,3 +206,47 @@ POST hamlet_3/_update_by_query
     "source": "ctx._source['line_number'] = '1.3.29'; ctx._source['character_or_line']['name'] = 'line'; ctx._source['character_or_line']['parent'] = 'c1'"
   }
 }
+
+合入：https://github.com/mingyitianxia/elastic-certified-engineer/issues/5 bug
+更新父子文档需要调整routing，但是普通的script不可以更新文档的routing，所以必须在reindex的时候script指定routing，
+
+或者在update_by_query的时候使用pipeline的script更新文档的routing
+
+PUT _scripts/init_lines
+{
+  "script": {
+    "lang": "painless",
+    "source": """
+              HashMap map = new HashMap();
+              map.name = 'line';
+              map.parent = params.characterId;
+              ctx._source.character_or_line = map;
+              """
+  }
+}
+PUT _ingest/pipeline/set_routing
+{
+  "processors": [
+    {
+      "script": {
+        "source": """
+              ctx._routing = 'C0';
+              """
+      }
+    }
+  ]
+}
+POST hamlet_3/_update_by_query?pipeline=set_routing
+{
+  "script": {
+    "id": "init_lines",
+    "params": {
+      "characterId": "C0"
+    }
+  },
+  "query": {
+    "match": {
+      "speaker": "HAMLET"
+    }
+  }
+}
