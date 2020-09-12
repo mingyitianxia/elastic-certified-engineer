@@ -301,3 +301,24 @@ GET kibana_sample_data_ecommerce/_search
     }
   ]
 }
+
+合入：https://github.com/mingyitianxia/elastic-certified-engineer/issues/6
+picking the lowest value of the array
+应该指定下 mode
+
+GET kibana_sample_data_ecommerce/_search
+{
+  "query": {
+    "match": {
+      "day_of_week": "Monday"
+    }
+  },
+  "sort": [
+    {
+      "products.base_price": {
+        "order": "desc",
+         "mode": "min"
+      }
+    }
+  ]
+}
