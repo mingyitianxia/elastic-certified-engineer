@@ -1,0 +1,73 @@
+version: "3.6"
+networks:
+  bigdata:
+    external: true
+
+volumes:
+  es721data1:
+    driver: local
+
+services:
+  es721Node1:
+    image: elasticsearch:${es_version:-7.2.1}
+    restart: always
+    container_name: es721Node1
+    environment:
+      - node.name=es721Node1
+      - node.master=true
+      - node.data=true
+      - node.ingest=true
+      - node.ml=true
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=es721Node1
+      - discovery.seed_hosts=es721Node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - path.repo=/usr/share/elasticsearch/backup
+      - node.attr.name=es721Node1
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      # - xpack.security.transport.ssl.keystore.type=PKCS12
+      # - xpack.security.transport.ssl.verification_mode=certificate
+      # - xpack.security.transport.ssl.keystore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.type=PKCS12
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es721data1:/usr/share/elasticsearch/data
+      - ./esBackup/:/usr/share/elasticsearch/backup
+      - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - bigdata
+
+  kibana721:
+    image: kibana:${es_version:-7.2.1}
+    container_name: kibana721
+    environment:
+      ELASTICSEARCH_HOSTS: http://es721Node1:9200
+      ELASTICSEARCH_USERNAME: kibana
+      ELASTICSEARCH_PASSWORD: kibana-password
+    depends_on:
+      - es721Node1
+    ports:
+      - 5601:5601
+    networks:
+      - bigdata
+      # Changed password for user apm_system
+      # PASSWORD apm_system = zfTXHVVkciaoboy1MkTH
+      # Changed password for user kibana
+      # PASSWORD kibana = W3omIVEavL1kVWsnsG7p
+      # Changed password for user logstash_system
+      # PASSWORD logstash_system = jNKTHSjilsMMhP19WGSS
+      # Changed password for user beats_system
+      # PASSWORD beats_system = xAJJP75Sg94Y5bi74GYk
+      # Changed password for user remote_monitoring_user
+      # PASSWORD remote_monitoring_user = GfMMlI4is57muceplA19
+      # Changed password for user elastic
+      # PASSWORD elastic = 2nScHdIQgdBbIgJiQ0z2
