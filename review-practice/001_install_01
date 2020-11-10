@@ -29,7 +29,7 @@ cluster.remote.connect: false
 http.host: 151.101.2.217
 http:port: 9201
 
-http.host: 151.101.2.218
+network.host: 151.101.2.218
 http:port: 9202
 
 http.host: 151.101.2.219
@@ -38,7 +38,7 @@ http:port: 9203
 discovery.seed_hosts:["node1","node2","node3"]
 
 # Configure the nodes to avoid the split brain scenario
-initial_master_nodes：["node1"]
+cluster.initial_master_nodes：["node1"]
 
 # Configure `node1` to be a data node but not an ingest node
 node.master: false 
