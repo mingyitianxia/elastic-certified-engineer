@@ -26,13 +26,13 @@ cluster.remote.connect: false
 # Configure the cluster discovery module of `node2` and `node3` so
 #    as to use `node1` as seed host
 
-http.host: 151.101.2.217
+network.host: 151.101.2.217
 http:port: 9201
 
 network.host: 151.101.2.218
 http:port: 9202
 
-http.host: 151.101.2.219
+network.host: 151.101.2.219
 http:port: 9203
 
 discovery.seed_hosts:["node1","node2","node3"]
