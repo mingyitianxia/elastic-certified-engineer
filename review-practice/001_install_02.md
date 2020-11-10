@@ -86,29 +86,29 @@ We are now going to use the _bulk API to index some documents into the cluster. 
 1. Let’s continue with the exercise.
    1. Create the index `hamlet` and add some documents by running the following _bulk command:
    2. 通过下面一些bulk的命令把哈姆雷特的句子存进ES（这些命令基本上得在kibana里执行，因为他们不是正常的curl命令）
-```bash
-PUT hamlet/_bulk
-{"index":{"_index":"hamlet","_id":0}}
-{"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
-{"index":{"_index":"hamlet","_id":1}}
-{"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
-{"index":{"_index":"hamlet","_id":2}}
-{"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
-{"index":{"_index":"hamlet","_id":3}}
-{"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
-{"index":{"_index":"hamlet","_id":4}}
-{"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
-{"index":{"_index":"hamlet","_id":5}}
-{"line_number":"6","speaker":"FRANCISCO","text_entry":"You come most carefully upon your hour."}
-{"index":{"_index":"hamlet","_id":6}}
-{"line_number":"7","speaker":"BERNARDO","text_entry":"Tis now struck twelve; get thee to bed, Francisco."}
-{"index":{"_index":"hamlet","_id":7}}
-{"line_number":"8","speaker":"FRANCISCO","text_entry":"For this relief much thanks: tis bitter cold,"}
-{"index":{"_index":"hamlet","_id":8}}
-{"line_number":"9","speaker":"FRANCISCO","text_entry":"And I am sick at heart."}
-{"index":{"_index":"hamlet","_id":9}}
-{"line_number":"10","speaker":"BERNARDO","text_entry":"Have you had quiet guard?"}
-```
+    ```bash
+    PUT hamlet/_bulk
+    {"index":{"_index":"hamlet","_id":0}}
+    {"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
+    {"index":{"_index":"hamlet","_id":1}}
+    {"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+    {"index":{"_index":"hamlet","_id":2}}
+    {"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+    {"index":{"_index":"hamlet","_id":3}}
+    {"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
+    {"index":{"_index":"hamlet","_id":4}}
+    {"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
+    {"index":{"_index":"hamlet","_id":5}}
+    {"line_number":"6","speaker":"FRANCISCO","text_entry":"You come most carefully upon your hour."}
+    {"index":{"_index":"hamlet","_id":6}}
+    {"line_number":"7","speaker":"BERNARDO","text_entry":"Tis now struck twelve; get thee to bed, Francisco."}
+    {"index":{"_index":"hamlet","_id":7}}
+    {"line_number":"8","speaker":"FRANCISCO","text_entry":"For this relief much thanks: tis bitter cold,"}
+    {"index":{"_index":"hamlet","_id":8}}
+    {"line_number":"9","speaker":"FRANCISCO","text_entry":"And I am sick at heart."}
+    {"index":{"_index":"hamlet","_id":9}}
+    {"line_number":"10","speaker":"BERNARDO","text_entry":"Have you had quiet guard?"}
+    ```
 
 ### 第2题，题解
 
@@ -168,14 +168,14 @@ You can specify authentication (“who are you”) and authorisation (“what yo
 3. Login using the `francisco` user credentials, and run queries on `hamlet` to verify that the role privileges were correctly set
    1. 用`francisco`登录系统，然后对`hamlet`执行一些查询以确保权限被设置正确了。
 
-```bash
-GET hamlet/_search
-PUT hamlet/_doc/1
-{"tesst":"1111"}
-DELETE hamlet
-GET _cat/indices
-DELETE .kibana
-```
+   ```bash
+   GET hamlet/_search
+   PUT hamlet/_doc/1
+   {"tesst":"1111"}
+   DELETE hamlet
+   GET _cat/indices
+   DELETE .kibana
+   ```
 
 ### 第3题，题解
 

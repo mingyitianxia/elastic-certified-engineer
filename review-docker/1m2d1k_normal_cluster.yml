@@ -24,6 +24,11 @@ services:
       - node.data=true
       - node.ingest=true
       - node.ml=true
+      - node.attr.AZ=earth
+      - node.attr.hot_warm_type=hot
+      - node.attr.storage=large
+      - cluster.routing.allocation.awareness.attributes=AZ
+      - cluster.routing.allocation.awareness.force.AZ.values=earth,mars
       - cluster.name=docker-cluster
       - cluster.initial_master_nodes=es721Node1
       - discovery.seed_hosts=es721Node1
@@ -62,6 +67,11 @@ services:
       - node.data=true
       - node.ingest=true
       - node.ml=false
+      - node.attr.AZ=earth
+      - node.attr.hot_warm_type=warm
+      - node.attr.storage=small
+      - cluster.routing.allocation.awareness.attributes=AZ
+      - cluster.routing.allocation.awareness.force.AZ.values=earth,mars
       - cluster.name=docker-cluster
       - cluster.initial_master_nodes=es721Node1
       - discovery.seed_hosts=es721Node1
@@ -100,6 +110,11 @@ services:
       - node.data=true
       - node.ingest=true
       - node.ml=false
+      - node.attr.AZ=mars
+      - node.attr.hot_warm_type=warm
+      - node.attr.storage=large
+      - cluster.routing.allocation.awareness.attributes=AZ
+      - cluster.routing.allocation.awareness.force.AZ.values=earth,mars
       - cluster.name=docker-cluster
       - cluster.initial_master_nodes=es721Node1
       - discovery.seed_hosts=es721Node1
