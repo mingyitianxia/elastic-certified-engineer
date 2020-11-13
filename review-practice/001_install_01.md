@@ -98,7 +98,8 @@ Node1
 node.name: node1
 node.master: true
 
-http.host: 151.101.2.217
+network.host: 151.101.2.217
+# 这里也可以用http.host，只是不常用
 http.port: 9201
 
 initial_master_nodes: ["node1"]
@@ -108,7 +109,7 @@ Node2
 ```yml
 node.name: node2
 
-http.host: 151.101.2.218
+network.host: 151.101.2.218
 http.port: 9202
 
 discovery.seed_host: ["151.101.2.217:9201","151.101.2.218:9202","151.101.2.219:9203"]
@@ -120,7 +121,7 @@ Node3
 ```yml
 node.name: node3
 
-http.host: 151.101.2.219
+network.host: 151.101.2.219
 http.port: 9203
 
 discovery.seed_host: ["151.101.2.217:9201","151.101.2.218:9202","151.101.2.219:9203"]
@@ -132,18 +133,21 @@ initial_master_nodes: ["node1"]
 
 1. 给`node`指定ip地址和端口
     1. 这个配置主要和`http.host`和`http.port`相关，当然，一般我们常用的可能是`network.host`，用来绑定ES节点的监听ip。同时，ES还存在分别针对http和tcp不同的监听端口`http.port`和`transport.port`。
-    1. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-network.html)
-    1. 页面路径：Modules =》 Network Settings
+    1. [参考链接-network.host](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/network.host.html)，[参考链接-newtork settings](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-network.html)，[参考链接-http modules](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/modules-http.html)
+    1. 页面路径-network.host：Set up Elasticsearch =》 Important Elasticsearch configuration =》 network.host
+    2. 页面路径-newtork settings：Modules =》 Network Settings
+    3. 页面路径-http modules：Modules =》 HTTP
+   * `network.host`和`http.host`的关系（来自虎哥）：network.host是一个全局的设置，ES有内部通讯9300和外部通讯http 9200，默认都使用这个host。考虑到有可能有对内对外接口网络分离的需要，提供了http.host这种配置。从官方文档里面其实也能看出来。http.host 是做为http.bind_host 和http.publish_host的默认值存在的。当http.host设置不存在的时候，前面的两个参数，又会指向network.bind_host和network.publish_host，而后两者默认又是执行network.host.
 
-1. 修改监听配置，让`node2`和`node3`以`node1`为seed host
+2. 修改监听配置，让`node2`和`node3`以`node1`为seed host
     1. 这个参数在7.x之前是`discovery.zen.xxxx`但在考试版本（7.2）中已经换成了`discovery.seed_hosts`了。所以这里涉及到的会是`discovery.seed_hosts`和`cluster.initial_master_nodes`这俩配置项。
-    1. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/discovery-settings.html)
-    1. 页面路径：Set up Elasticsearch =》 Important Elasticsearch configuration =》 Discovery and cluster formation settings
+    2. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/discovery-settings.html)
+    3. 页面路径：Set up Elasticsearch =》 Important Elasticsearch configuration =》 Discovery and cluster formation settings
 
-1. 调整节点配置，防止脑裂的发生。
+3. 调整节点配置，防止脑裂的发生。
     1. 其实在第0题中，我们曾尝试把三个节点都作为master节点的候选人，在7.x的启动过程中，如果三个节点中某个节点暂时离开网络，那很有可能会自成集群造成脑裂，所以这里需要一个配置让集群在初始化启动，还没正式选出master节点的时候以某一/几个节点优先成为master节点。这里涉及到的就是 ⬆️ 里面提到过的`cluster.initial_master_nodes`配置项。
-    1. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/discovery-settings.html)
-    1. 页面路径：Set up Elasticsearch =》 Important Elasticsearch configuration =》 Discovery and cluster formation settings
+    2. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/discovery-settings.html)
+    3. 页面路径：Set up Elasticsearch =》 Important Elasticsearch configuration =》 Discovery and cluster formation settings
 
 ### 第2题，按要求调整节点配置
 

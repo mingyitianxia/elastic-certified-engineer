@@ -58,7 +58,7 @@
     ```
 
 ## 第0题，题解
-
+（由于我是基于我的docker-compose文件启动的集群，所以会和题目不完全一样，比如题目里的node1我用的是esNode1，下同）
 1. 创建索引，在kibana里运行下面的命令
    ```bash
     PUT hamlet-1
@@ -691,7 +691,6 @@ es721Node3 4ym8 1   172.18.0.5 172.18.0.5 9300 xpack.installed   true
    }
    ```
 
-
 ## 第4题，题解说明
 * 这题前面一半和上一题一样，通过节点的额外属性`node.attr.${attribute}`配合索引的`index.routing.allocation.include.${attribute}`来管理索引分片的放置，后半段考察的也是平时做类似分片管理的时候需要注意的就是节点的属性可能会存在除斥（多个配置不存在交集），导致索引的分片无法被放置，以至于被标记为`UNASSIGNED`
   * 为了能满足这个状态，我把题目的一些要求稍做了修改
@@ -709,7 +708,7 @@ es721Node3 4ym8 1   172.18.0.5 172.18.0.5 9300 xpack.installed   true
         6. "can_allocate" : "no"：是否可分配：否
         7. "allocate_explanation" : "cannot allocate because allocation is not permitted to any of the nodes"：分配解释：无法分配分片，因为分片配置无法匹配任何节点
         8. "node_allocation_decisions" : 各个节点分配情况详情
-     2. 其他的不写了，看key和value也可以知道理由的
+     2. 其他的不写了，看key和value也可以知道大概意思
      3. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/cluster-allocation-explain.html)
      4. 页面路径：Cluster APIs =》 Cluster Allocation Explain API
   3. 当`UNASSIGNED`分片存在的时候，通过接口`GET _cat/health`可以看出来集群是不健康的
