@@ -7,6 +7,7 @@
 目标：用ES的安全模块保护集群和索引
 
 ## REQUIRED SETUP
+建议docker-compose文件：`1e1k_base_cluster.yml`
 
 ### 第0题，按要求创建集群
 

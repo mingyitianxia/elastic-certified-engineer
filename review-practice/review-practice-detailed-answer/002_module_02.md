@@ -1,10 +1,12 @@
 ## CLUSTER ADMINISTRATION
 集群管理
 
-# GOAL: Backup and cross-cluster search
+## GOAL: Backup and cross-cluster search
 目标：备份和跨集群搜索
 
 ## REQUIRED SETUP: 
+建议docker-compose文件：`2e2k_two_clusters.yml`
+
 需求几步骤：
 
 Let’s create a one-node cluster and index some data in it.

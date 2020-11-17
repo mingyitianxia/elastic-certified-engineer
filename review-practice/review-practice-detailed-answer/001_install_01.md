@@ -7,6 +7,7 @@
 目标： 根据给定需求配置一个ES集群。过程略，[官方链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/install-elasticsearch.html)
 
 ## REQUIRED SETUP
+建议docker-compose文件：`1m2d1k_normal_cluster.yml`
 
 ### 第0题，按要求配置集群
 

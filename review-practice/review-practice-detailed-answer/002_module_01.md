@@ -1,12 +1,11 @@
 ## LUSTER ADMINISTRATION
-
 集群管理
 
 ## GOAL: Allocate the shards in a way that satisfies a given set of requirements
-
 目标，根据要求把分配放置在合适的位置
 
 ## REQUIRED SETUP: /
+建议docker-compose文件：`1m2d1k_normal_cluster.yml`
 
 前期准备：
 
