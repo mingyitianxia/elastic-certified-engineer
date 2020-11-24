@@ -34,6 +34,10 @@ PUT hamlet_1
 # Update the mapping of `hamlet_1` by disabling aggregations on 
 #    `line_number`
 GET /hamlet_1/_mapping
+
+//注意：死敌wen兄帮发现bug，此处是不能更新的。202011-24
+//应该先删除索引，重建索引才可以，或者reindex方式实现。
+//官方文档的说明：https://www.elastic.co/guide/en/elasticsearch/reference/7.2/mapping.html
 PUT /hamlet_1/_mapping
 {
   "properties": {
