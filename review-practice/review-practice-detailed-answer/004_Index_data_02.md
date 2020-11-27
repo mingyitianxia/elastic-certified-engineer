@@ -4,8 +4,9 @@
 ## GOAL: build index template and index some documents
 目标：按要求创建索引模板并存入数据
 
-## 第1题，按要求创建索引模板
+建议docker-compose文件：`1e1k_base_cluster.yml`
 
+## 第1题，按要求创建索引模板
 1. Create the index template `hamlet_template`, so that the template:
    1. 创建一个叫`hamlet_template`的索引模板，满足以下要求
    2. matches any index that starts by "hamlet_" or "hamlet-", 

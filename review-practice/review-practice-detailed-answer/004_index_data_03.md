@@ -1,8 +1,9 @@
 ## Analyze & Save
 分析和保存（数据）
 
-## GOAL: analyze and save data againse requirements
+## GOAL: analyze and save data against requirements
 目标：按要求分析（分词）和保存数据
+建议docker-compose文件：`1e1k_base_cluster.yml`
 
 ## 第1题，索引与别名
 
@@ -10,30 +11,30 @@
    1. 创建两个索引，`hamlet-1` 和 `hamlet-2`，让他们都有2个主分片没有副本
 2. Add some documents to `hamlet-1` by running the following command
    1. 用下面的命令给`hamlet-1`添加一些数据
-    ```bash
-    PUT hamlet-1/_doc/_bulk
-    {"index":{"_index":"hamlet-1","_id":0}}
-    {"line_number":"1.1.1","speaker":"BERNARDO","text_entry":"Whos there?"}
-    {"index":{"_index":"hamlet-1","_id":1}}
-    {"line_number":"1.1.2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
-    {"index":{"_index":"hamlet-1","_id":2}}
-    {"line_number":"1.1.3","speaker":"BERNARDO","text_entry":"Long live the king!"}
-    {"index":{"_index":"hamlet-1","_id":3}}
-    {"line_number":"1.2.1","speaker":"KING CLAUDIUS","text_entry":"Though yet of Hamlet our dear brothers death"}
-    ```
+      ```bash
+      PUT hamlet-1/_doc/_bulk
+      {"index":{"_index":"hamlet-1","_id":0}}
+      {"line_number":"1.1.1","speaker":"BERNARDO","text_entry":"Whos there?"}
+      {"index":{"_index":"hamlet-1","_id":1}}
+      {"line_number":"1.1.2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+      {"index":{"_index":"hamlet-1","_id":2}}
+      {"line_number":"1.1.3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+      {"index":{"_index":"hamlet-1","_id":3}}
+      {"line_number":"1.2.1","speaker":"KING CLAUDIUS","text_entry":"Though yet of Hamlet our dear brothers death"}
+      ```
 3. Add some documents to `hamlet-2` by running the following command
    1. 用下面的命令给`hamlet-2`添加一些数据
-    ```bash
-    PUT hamlet-2/_doc/_bulk
-    {"index":{"_index":"hamlet-2","_id":4}}
-    {"line_number":"2.1.1","speaker":"LORD POLONIUS","text_entry":"Give him this money and these notes, Reynaldo."}
-    {"index":{"_index":"hamlet-2","_id":5}}
-    {"line_number":"2.1.2","speaker":"REYNALDO","text_entry":"I will, my lord."}
-    {"index":{"_index":"hamlet-2","_id":6}}
-    {"line_number":"2.1.3","speaker":"LORD POLONIUS","text_entry":"You shall do marvellous wisely, good Reynaldo,"}
-    {"index":{"_index":"hamlet-2","_id":7}}
-    {"line_number":"2.1.4","speaker":"LORD POLONIUS","text_entry":"Before you visit him, to make inquire"}
-    ```
+      ```bash
+      PUT hamlet-2/_doc/_bulk
+      {"index":{"_index":"hamlet-2","_id":4}}
+      {"line_number":"2.1.1","speaker":"LORD POLONIUS","text_entry":"Give him this money and these notes, Reynaldo."}
+      {"index":{"_index":"hamlet-2","_id":5}}
+      {"line_number":"2.1.2","speaker":"REYNALDO","text_entry":"I will, my lord."}
+      {"index":{"_index":"hamlet-2","_id":6}}
+      {"line_number":"2.1.3","speaker":"LORD POLONIUS","text_entry":"You shall do marvellous wisely, good Reynaldo,"}
+      {"index":{"_index":"hamlet-2","_id":7}}
+      {"line_number":"2.1.4","speaker":"LORD POLONIUS","text_entry":"Before you visit him, to make inquire"}
+      ```
 4. Create the alias `hamlet` that maps both `hamlet-1` and `hamlet-2` 
    1. 创建一个叫`hamlet`的索引别名，同时指向`hamlet-1`和`hamlet-2`两个索引
 5. Verify that the documents grouped by `hamlet` are 8
@@ -43,32 +44,32 @@
 
 1. 创建索引
    1. 清理现有数据
-    ```bash
-    DELETE hamlet
-    DELETE hamlet-1
-    DELETE hamlet-2
-    ```
+      ```bash
+      DELETE hamlet
+      DELETE hamlet-1
+      DELETE hamlet-2
+      ```
 
    2. 创建新索引
-    ```bash
-    PUT hamlet-1
-    {
-      "settings": {
-        "number_of_shards": 2,
-        "number_of_replicas": 0
+      ```bash
+      PUT hamlet-1
+      {
+        "settings": {
+          "number_of_shards": 2,
+          "number_of_replicas": 0
+        }
       }
-    }
-    ```
+      ```
 
-    ```bash
-    PUT hamlet-2
-    {
-      "settings": {
-        "number_of_shards": 2,
-        "number_of_replicas": 0
+      ```bash
+      PUT hamlet-2
+      {
+        "settings": {
+          "number_of_shards": 2,
+          "number_of_replicas": 0
+        }
       }
-    }
-    ```
+      ```
 
    3. 索引校验
    
@@ -532,13 +533,13 @@
    1. 创建一个叫`split_act_scene_line`的pipeline，它需要能用"."做分隔符把`line_number`拆成3个字段，分别叫`number_act`, `number_scene` 和 `number_line`。
 1. To verify that an ingest pipeline works as expected, you can rely on the `_simulate` pipeline API. Test the pipeline on the following document:
    1. 你可以用下面的数据通过`_simulate`API来校验你的pipeline是否满足条件
-    ```json
-    {
-      "_source": {
-        "line_number": "1.2.3"
+      ```json
+      {
+        "_source": {
+          "line_number": "1.2.3"
+        }
       }
-    }
-    ```
+      ```
 1. Satisfied with the outcome? Go update your documents, then! Update all documents in `hamlet-new` by using the `split_act_scene_line` pipeline
    1. 结果还不错吧？那去把你到文档更新了吧！通过`split_act_scene_line`把`hamlet-new`中所有的文档都更新掉
 
@@ -1047,4 +1048,4 @@
   3. 页面路径-set：Ingest node =》 Processors =》 Set Processor
   4. 页面路径-script：Ingest node =》 Processors =》 Script Processor
   5. 页面路径-pipeline：Ingest node =》 Processors =》 Pipeline Processor
-  6. 页面路径-pipeline：Ingest node =》 Ingest APIs => Simulate Pipeline API
+  6. 页面路径-pipeline-simulate：Ingest node =》 Ingest APIs => Simulate Pipeline API

@@ -5,10 +5,8 @@
 目标：备份和跨集群搜索
 
 ## REQUIRED SETUP: 
+初始化步骤
 建议docker-compose文件：`2e2k_two_clusters.yml`
-
-需求几步骤：
-
 Let’s create a one-node cluster and index some data in it.
 让我们先搞一个但节点的集群，然后存点数据进去
 1. Download the exam version of Elasticsearch
@@ -19,28 +17,27 @@ Let’s create a one-node cluster and index some data in it.
    1. 启动集群
 4. Create the index `hamlet` and add some documents by running the following _bulk command
    1. 创建一个叫`hamlet`的索引，并用下面 ⬇️ 的语句存谢数据进去
-
-```bash
-PUT hamlet/_bulk
-{"index":{"_index":"hamlet","_id":0}}
-{"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
-{"index":{"_index":"hamlet","_id":1}}
-{"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
-{"index":{"_index":"hamlet","_id":2}}
-{"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
-{"index":{"_index":"hamlet","_id":3}}
-{"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
-{"index":{"_index":"hamlet","_id":4}}
-{"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
-```
-或者
-```bash
-DELETE hamlet
-PUT hamlet/_doc/1
-{"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
-PUT hamlet/_doc/2
-{"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
-```
+    ```bash
+    PUT hamlet/_bulk
+    {"index":{"_index":"hamlet","_id":0}}
+    {"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
+    {"index":{"_index":"hamlet","_id":1}}
+    {"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+    {"index":{"_index":"hamlet","_id":2}}
+    {"line_number":"3","speaker":"BERNARDO","text_entry":"Long live the king!"}
+    {"index":{"_index":"hamlet","_id":3}}
+    {"line_number":"4","speaker":"FRANCISCO","text_entry":"Bernardo?"}
+    {"index":{"_index":"hamlet","_id":4}}
+    {"line_number":"5","speaker":"BERNARDO","text_entry":"He."}
+    ```
+    * 或者
+    ```bash
+    DELETE hamlet
+    PUT hamlet/_doc/1
+    {"line_number":"1","speaker":"BERNARDO","text_entry":"Whos there?"}
+    PUT hamlet/_doc/2
+    {"line_number":"2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself."}
+    ```
 
 ## 第1题，创建备份存储空间
 
@@ -61,16 +58,15 @@ PUT hamlet/_doc/2
    1. `echo 'path.repo: [${dir}]' >> /$ES_HOME/config/elasticsearch.yml`
 3. 重启集群中的所有节点是这个配置生效
 4. 把共享存储注册为`hamlet_backup`的存储仓库
-   1. 执行以下命令
-   ```bash
-   PUT _snapshot/hamlet_backup
-    {
-      "type": "fs",
-      "settings": {
-        "location": "/usr/share/elasticsearch/backup"
+    ```bash
+    PUT _snapshot/hamlet_backup
+      {
+        "type": "fs",
+        "settings": {
+          "location": "/usr/share/elasticsearch/backup"
+        }
       }
-    }
-   ```
+    ```
 
 ## 第1题，题解说明
 
@@ -98,118 +94,111 @@ PUT hamlet/_doc/2
 
 ## 第2题，题解
 
-1. 创建snapshot，运行以下命令
-   
-  ```bash
-  PUT /_snapshot/hamlet_backup/hamlet_snapshot_1?wait_for_completion=true
-  {
-    "indices": "hamlet",
-    "ignore_unavailable": true,
-    "include_global_state": false
-  }
-  ```
-   * 可能返回值
-
-  ```json
-  {
-    "snapshot" : {
-      "snapshot" : "hamlet_snapshot_1",
-      "uuid" : "vv_unWlzTGyAKc8VJVA5aA",
-      "version_id" : 7020199,
-      "version" : "7.2.1",
-      "indices" : [
-        "hamlet"
-      ],
-      "include_global_state" : false,
-      "state" : "SUCCESS",
-      "start_time" : "2020-11-12T02:53:42.547Z",
-      "start_time_in_millis" : 1605149622547,
-      "end_time" : "2020-11-12T02:53:42.631Z",
-      "end_time_in_millis" : 1605149622631,
-      "duration_in_millis" : 84,
-      "failures" : [ ],
-      "shards" : {
-        "total" : 1,
-        "failed" : 0,
-        "successful" : 1
+1. 创建snapshot
+    ```bash
+    PUT /_snapshot/hamlet_backup/hamlet_snapshot_1?wait_for_completion=true
+    {
+      "indices": "hamlet",
+      "ignore_unavailable": true,
+      "include_global_state": false
+    }
+    ```
+   * 返回值
+    ```json
+    {
+      "snapshot" : {
+        "snapshot" : "hamlet_snapshot_1",
+        "uuid" : "vv_unWlzTGyAKc8VJVA5aA",
+        "version_id" : 7020199,
+        "version" : "7.2.1",
+        "indices" : [
+          "hamlet"
+        ],
+        "include_global_state" : false,
+        "state" : "SUCCESS",
+        "start_time" : "2020-11-12T02:53:42.547Z",
+        "start_time_in_millis" : 1605149622547,
+        "end_time" : "2020-11-12T02:53:42.631Z",
+        "end_time_in_millis" : 1605149622631,
+        "duration_in_millis" : 84,
+        "failures" : [ ],
+        "shards" : {
+          "total" : 1,
+          "failed" : 0,
+          "successful" : 1
+        }
       }
     }
-  }
-  ```
+    ```
   
   * 如果多跑一次
-   
-  ```json
-  {
-    "error": {
-      "root_cause": [
-        {
-          "type": "invalid_snapshot_name_exception",
-          "reason": "[hamlet_backup:hamlet_snapshot_1] Invalid snapshot name [hamlet_snapshot_1], snapshot with the same name already exists"
-        }
-      ],
-      "type": "invalid_snapshot_name_exception",
-      "reason": "[hamlet_backup:hamlet_snapshot_1] Invalid snapshot name [hamlet_snapshot_1], snapshot with the same name already exists"
-    },
-    "status": 400
-  }
-  ```
+    ```json
+    {
+      "error": {
+        "root_cause": [
+          {
+            "type": "invalid_snapshot_name_exception",
+            "reason": "[hamlet_backup:hamlet_snapshot_1] Invalid snapshot name [hamlet_snapshot_1], snapshot with the same name already exists"
+          }
+        ],
+        "type": "invalid_snapshot_name_exception",
+        "reason": "[hamlet_backup:hamlet_snapshot_1] Invalid snapshot name [hamlet_snapshot_1], snapshot with the same name already exists"
+      },
+      "status": 400
+    }
+    ```
 
 1. 删除索引，`DELETE hamlet`
 1. 从`hamlet_snapshot_1`恢复数据
-
-  ```bash
-  POST /_snapshot/hamlet_backup/hamlet_snapshot_1/_restore?wait_for_completion=true
-  {
-    "indices": "hamlet",
-    "include_global_state": false,
-    "ignore_unavailable": true
-  }
-  ```
+    ```bash
+    POST /_snapshot/hamlet_backup/hamlet_snapshot_1/_restore?wait_for_completion=true
+    {
+      "indices": "hamlet",
+      "include_global_state": false,
+      "ignore_unavailable": true
+    }
+    ```
 
   * 可能返回值（不加wait_for_completion=true）
-
-  ```json
-  {
-    "accepted": true
-  }
-  ```
+    ```json
+    {
+      "accepted": true
+    }
+    ```
 
   * wait_for_completion情况
-
-  ```json
-  {
-    "snapshot" : {
-      "snapshot" : "hamlet_snapshot_1",
-      "indices" : [
-        "hamlet"
-      ],
-      "shards" : {
-        "total" : 1,
-        "failed" : 0,
-        "successful" : 1
+    ```json
+    {
+      "snapshot" : {
+        "snapshot" : "hamlet_snapshot_1",
+        "indices" : [
+          "hamlet"
+        ],
+        "shards" : {
+          "total" : 1,
+          "failed" : 0,
+          "successful" : 1
+        }
       }
     }
-  }
-  ```
+    ```
 
   * 如果多跑一次
-
-  ```json
-  {
-    "error": {
-      "root_cause": [
-        {
-          "type": "snapshot_restore_exception",
-          "reason": "[hamlet_backup:hamlet_snapshot_1/vv_unWlzTGyAKc8VJVA5aA] cannot restore index [hamlet] because an open index with same name already exists in the cluster. Either close or delete the existing index or restore the index under a different name by providing a rename pattern and replacement name"
-        }
-      ],
-      "type": "snapshot_restore_exception",
-      "reason": "[hamlet_backup:hamlet_snapshot_1/vv_unWlzTGyAKc8VJVA5aA] cannot restore index [hamlet] because an open index with same name already exists in the cluster. Either close or delete the existing index or restore the index under a different name by providing a rename pattern and replacement name"
-    },
-    "status": 500
-  }
-  ```
+    ```json
+    {
+      "error": {
+        "root_cause": [
+          {
+            "type": "snapshot_restore_exception",
+            "reason": "[hamlet_backup:hamlet_snapshot_1/vv_unWlzTGyAKc8VJVA5aA] cannot restore index [hamlet] because an open index with same name already exists in the cluster. Either close or delete the existing index or restore the index under a different name by providing a rename pattern and replacement name"
+          }
+        ],
+        "type": "snapshot_restore_exception",
+        "reason": "[hamlet_backup:hamlet_snapshot_1/vv_unWlzTGyAKc8VJVA5aA] cannot restore index [hamlet] because an open index with same name already exists in the cluster. Either close or delete the existing index or restore the index under a different name by providing a rename pattern and replacement name"
+      },
+      "status": 500
+    }
+    ```
 
 1. 运行`GET _cat/indices` 检查一下索引是否还存在
 1. 运行`GET hamlet/_search`
@@ -254,24 +243,24 @@ PUT hamlet/_doc/2
 1. 创建集群大部分操作参考之前的章节，这里不再赘述
 2. 跨集群数据恢复：
    1. 在新集群里注册存储地址
-    ```bash
-    PUT _snapshot/hamlet_backup
-      {
-        "type": "fs",
-        "settings": {
-          "location": "/usr/share/elasticsearch/backup"
+      ```bash
+      PUT _snapshot/hamlet_backup
+        {
+          "type": "fs",
+          "settings": {
+            "location": "/usr/share/elasticsearch/backup"
+          }
         }
-      }
-    ```
+      ```
    1. 使用和本集群自己恢复的命令一样（也可以根据需要稍作修改）
-    ```bash
-    POST /_snapshot/hamlet_backup/hamlet_snapshot_1/_restore?wait_for_completion=true
-    {
-      "indices": "hamlet",
-      "include_global_state": false,
-      "ignore_unavailable": true
-    }
-    ```
+      ```bash
+      POST /_snapshot/hamlet_backup/hamlet_snapshot_1/_restore?wait_for_completion=true
+      {
+        "indices": "hamlet",
+        "include_global_state": false,
+        "ignore_unavailable": true
+      }
+      ```
 3. 开启跨集群搜索
 4. 有两种方式：
      * 通过kibana的设置：
@@ -283,7 +272,6 @@ PUT hamlet/_doc/2
            2. `Seed Node`：`es721Node1:9300` （因为我是在docker-compose集群里进行操作，所以写`es721Node1`这个内部域名，真正的生产环境换成实际的ip地址）
         5. `Save`
      * 通过ES的api：
-        1. 运行以下命令：
           ```bash
           PUT _cluster/settings
           {

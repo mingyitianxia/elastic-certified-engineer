@@ -5,9 +5,8 @@
 目标：按照题目要求创建、更新、删除索引
 
 ## REQUIRED SETUP: 
+初始化步骤
 建议docker-compose文件：`1e1k_base_cluster.yml`
-
-按要求初始化集群
 1. a running Elasticsearch cluster with at least one node and a Kibana instance,
    1. 初始化一个最少含有1个ES节点1个Kibana节点的ES集群
    2. the cluster has no index with name `hamlet`, 
@@ -100,12 +99,12 @@ DELETE _template/hamlet*
       }
       ```
     1. 或者简化版的script：
-      ```bash
-      POST hamlet-raw/_update/1
-      {
-          "script" : "ctx._source.line_number = '3.1.64'"
-      }
-      ```
+        ```bash
+        POST hamlet-raw/_update/1
+        {
+            "script" : "ctx._source.line_number = '3.1.64'"
+        }
+        ```
 
 ## 第1题，题解说明
 

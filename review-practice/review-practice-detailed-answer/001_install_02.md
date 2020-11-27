@@ -7,10 +7,8 @@
 目标：用ES的安全模块保护集群和索引
 
 ## REQUIRED SETUP
+初始化步骤
 建议docker-compose文件：`1e1k_base_cluster.yml`
-
-### 第0题，按要求创建集群
-
 1. a running Elasticsearch cluster with at least one node and a Kibana instance
    1. 创建一个最少拥有1个ES节点1个Kibana节点的集群
 1. no index with name `hamlet` is indexed on the cluster
@@ -114,30 +112,28 @@ We are now going to use the _bulk API to index some documents into the cluster. 
 ### 第2题，题解
 
 1. 添加数据的时候已经指定了数据结构，如果直接通过下面的bulk命令进行插入的话，索引也可以建立成功，因为ES会根据数据结构里字段的种类尝试进行索引，但是无论是考试还是平时工作的时候，个人都建议先创建索引，这样ES就不需要再分析数据结构尝试进行映射了。
-
-```bash
-PUT hamlet
-{
-  "settings": {
-    "number_of_shards": 1,
-    "number_of_replicas": 1
-  },
-  "mappings": {
-    "properties": {
-      "line_number": {
-        "type": "text"
-      },
-      "speaker": {
-        "type": "text"
-      },
-      "text_entry": {
-        "type": "text"
+   ```bash
+   PUT hamlet
+   {
+   "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1
+   },
+   "mappings": {
+      "properties": {
+         "line_number": {
+         "type": "text"
+         },
+         "speaker": {
+         "type": "text"
+         },
+         "text_entry": {
+         "type": "text"
+         }
       }
-    }
-  }
-}
-```
-
+   }
+   }
+   ```
 1. 然后在kibana的dev-tool里执行上面那些命令，贴在一起直接可以一起执行。
 
 ### 第2题，题解说明
@@ -168,15 +164,14 @@ You can specify authentication (“who are you”) and authorisation (“what yo
    1. 给`francisco`赋予`francisco_role`的权限组
 3. Login using the `francisco` user credentials, and run queries on `hamlet` to verify that the role privileges were correctly set
    1. 用`francisco`登录系统，然后对`hamlet`执行一些查询以确保权限被设置正确了。
-
-   ```bash
-   GET hamlet/_search
-   PUT hamlet/_doc/1
-   {"tesst":"1111"}
-   DELETE hamlet
-   GET _cat/indices
-   DELETE .kibana
-   ```
+      ```bash
+      GET hamlet/_search
+      PUT hamlet/_doc/1
+      {"tesst":"1111"}
+      DELETE hamlet
+      GET _cat/indices
+      DELETE .kibana
+      ```
 
 ### 第3题，题解
 
@@ -202,33 +197,33 @@ You can specify authentication (“who are you”) and authorisation (“what yo
 7. 运行上面 ⬆️ 那些命令
    1. 前几个都直接返回成功
    2. `DELETE .kibana`会返回下面 ⬇️ 报错，意思是当前用户对`.kibana`没有权限执行这个命令
-    ```json
-      {
-        "error": {
-          "root_cause": [
-            {
-              "type": "illegal_argument_exception",
-              "reason": "The provided expression [.kibana] matches an alias, specify the corresponding concrete indices instead."
-            }
-          ],
-          "type": "illegal_argument_exception",
-          "reason": "The provided expression [.kibana] matches an alias, specify the corresponding concrete indices instead."
-        },
-        "status": 400
-      }
-    ```
+      ```json
+         {
+         "error": {
+            "root_cause": [
+               {
+               "type": "illegal_argument_exception",
+               "reason": "The provided expression [.kibana] matches an alias, specify the corresponding concrete indices instead."
+               }
+            ],
+            "type": "illegal_argument_exception",
+            "reason": "The provided expression [.kibana] matches an alias, specify the corresponding concrete indices instead."
+         },
+         "status": 400
+         }
+      ```
 
 ### 第3题，题解说明
 
 * 这题主要考察用户权限以及kibana的操作
   1. 这里比较可能坑的是创建role的时候要选择kibana的space，否则即使账号创建好了，权限也设置好了，依然无法登录，报
-   ```json
-   {
-    "statusCode": 403,
-    "message": "Forbidden",
-    "error": "Forbidden"
-   }
-   ```
+      ```json
+      {
+         "statusCode": 403,
+         "message": "Forbidden",
+         "error": "Forbidden"
+      }
+      ```
   1. [参考连接-ES-权限说明](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-privileges.html#privileges-list-indices)
   2. [参考链接-ES-UserAPI](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-put-user.html)
   3. [参考链接-ES-RoleAPI](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-put-role.html)
@@ -259,34 +254,34 @@ Not bad, right? Now, let’s create a more sophisticated security role, which as
 ### 第4题，题解
 
 1. 在kibana里输入以下命令来创建role
-```bash
-POST /_security/role/bernardo_role
-{
-  "run_as": [ "bernardo" ],
-  "cluster": [ "monitor" ],
-  "indices": [
-    {
-      "names": [ "hamlet" ],
-      "privileges": [ "read" ],
-      "field_security" : {
-         "grant" : [ "text_entry" ]
-      },
-       "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
-    }
-  ]
-}
-```
+   ```bash
+   POST /_security/role/bernardo_role
+   {
+   "run_as": [ "bernardo" ],
+   "cluster": [ "monitor" ],
+   "indices": [
+      {
+         "names": [ "hamlet" ],
+         "privileges": [ "read" ],
+         "field_security" : {
+            "grant" : [ "text_entry" ]
+         },
+         "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
+      }
+   ]
+   }
+   ```
 
 1. 再输入以下命令创建用户
-```bash
-POST /_security/user/bernardo
-{
-  "password" : "bernardo-password",
-  "roles" : [ "bernardo_role"],
-  "full_name" : "Jack Nicholson",
-  "email" : "test@example.com"
-}
-```
+   ```bash
+   POST /_security/user/bernardo
+   {
+   "password" : "bernardo-password",
+   "roles" : [ "bernardo_role"],
+   "full_name" : "Jack Nicholson",
+   "email" : "test@example.com"
+   }
+   ```
 
 ### 第4题，题解说明
 
@@ -304,54 +299,54 @@ POST /_security/user/bernardo
 * 这里有几个比较坑爹的地方
   1. 在这题中的一些设置需要开通xpack的收费项目，一个解决办法是在kibana里试用一下，一个月时间用起来，另一个就只有答案背下来了。
      1. 如果没开相关权限的话，可能role的设置会提示你当前license没有 __字段/文档级别权限设置__ 的权力。role里的`query`和`field_security`都属于 __字段/文档级别权限设置__
-      ```json
-      {
-        "error": {
-          "root_cause": [
-            {
-              "type": "security_exception",
-              "reason": "current license is non-compliant for [field and document level security]",
-              "license.expired.feature": "field and document level security"
-            }
-          ],
-          "type": "security_exception",
-          "reason": "current license is non-compliant for [field and document level security]",
-          "license.expired.feature": "field and document level security"
-        },
-        "status": 403
-      }
-      ```
+         ```json
+         {
+         "error": {
+            "root_cause": [
+               {
+               "type": "security_exception",
+               "reason": "current license is non-compliant for [field and document level security]",
+               "license.expired.feature": "field and document level security"
+               }
+            ],
+            "type": "security_exception",
+            "reason": "current license is non-compliant for [field and document level security]",
+            "license.expired.feature": "field and document level security"
+         },
+         "status": 403
+         }
+         ```
 
   2. 在role里面的field可见性在role的设置的章节里没有，要转跳两次在【[这个连接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/field-level-security.html)】里才提到具体应该怎么设
   3. role里的数据筛选的query需要对原来的json做jsonToString的操作，因为这个字段是个String型的数据。
 * 所以即使单独使用下面这俩设置，都有可能提示权限不够。
-    ```bash
-    POST /_security/role/bernardo_role
-    {
-      "indices": [
-        {
-          "names": [ "*" ],
-          "privileges": [ "read" ],
-          "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
-        }
-      ]
-    }
-    ```
+      ```bash
+      POST /_security/role/bernardo_role
+      {
+         "indices": [
+         {
+            "names": [ "*" ],
+            "privileges": [ "read" ],
+            "query": "{\"match\": {\"speaker\": \"BERNARDO\"}}"
+         }
+         ]
+      }
+      ```
 
-    ```bash
-    POST /_security/role/bernardo_role
-    {
-      "indices": [
-        {
-          "names": [ "hamlet" ],
-          "privileges": [ "read" ],
-          "field_security" : {
-            "grant" : [ "text_entry" ]
-          }
-        }
-      ]
-    }
-    ```
+      ```bash
+      POST /_security/role/bernardo_role
+      {
+         "indices": [
+         {
+            "names": [ "hamlet" ],
+            "privileges": [ "read" ],
+            "field_security" : {
+               "grant" : [ "text_entry" ]
+            }
+         }
+         ]
+      }
+      ```
 
 ### 第5题，改密码
 
@@ -368,30 +363,30 @@ POST /_security/user/bernardo
 ### 第5题，题解
 
 1. 在kibana里输入以下命令
-```bash
-POST /_security/user/bernardo/_password
-{
-  "password": "poor-bernardo"
-}
-```
+   ```bash
+   POST /_security/user/bernardo/_password
+   {
+   "password": "poor-bernardo"
+   }
+   ```
 
 ### 第5题，题解说明
 * 这题就很简单的改密码，但是有个注意点是url里面的用户名（这里是`bernardo`），如果不指定就改的是当前登录的用户的密码，为了避免改错用户，还是建议在这里明确指定好。
   1. 这里的用户操作也会受权限所限制，比如用一个受限用户进行改密码操作，可能会提示权限不足。
-   ```json
-    {
-      "error": {
-        "root_cause": [
-          {
-            "type": "security_exception",
-            "reason": "action [cluster:admin/xpack/security/user/change_password] is unauthorized for user [test123]"
-          }
-        ],
-        "type": "security_exception",
-        "reason": "action [cluster:admin/xpack/security/user/change_password] is unauthorized for user [test123]"
-      },
-      "status": 403
-    }
-   ```
+      ```json
+      {
+         "error": {
+         "root_cause": [
+            {
+               "type": "security_exception",
+               "reason": "action [cluster:admin/xpack/security/user/change_password] is unauthorized for user [test123]"
+            }
+         ],
+         "type": "security_exception",
+         "reason": "action [cluster:admin/xpack/security/user/change_password] is unauthorized for user [test123]"
+         },
+         "status": 403
+      }
+      ```
    1. [参考链接](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/security-api-change-password.html)
       1. 页面路径：X-Pack APIs =》 Security APIs =》 Change passwords
