@@ -25,8 +25,8 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - path.repo=/usr/share/elasticsearch/backup
       - node.attr.name=es721Node1
-      - xpack.security.enabled=true
-      - xpack.security.transport.ssl.enabled=true
+      # - xpack.security.enabled=true
+      # - xpack.security.transport.ssl.enabled=true
       # - xpack.security.transport.ssl.keystore.type=PKCS12
       # - xpack.security.transport.ssl.verification_mode=certificate
       # - xpack.security.transport.ssl.keystore.path=elastic-certificates.p12
@@ -39,7 +39,7 @@ services:
     volumes:
       - es721data1:/usr/share/elasticsearch/data
       - ./esBackup/:/usr/share/elasticsearch/backup
-      - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      # - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
     ports:
       - 9200:9200
       - 9300:9300

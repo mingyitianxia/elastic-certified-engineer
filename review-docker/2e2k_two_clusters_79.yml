@@ -1,0 +1,127 @@
+version: "3.6"
+networks:
+  bigdata:
+    external: true
+
+# volumes:
+#   es721data1:
+#     driver: local
+#   es721Node1-2:
+#     driver: local
+
+services:
+  es790Node1:
+    image: elasticsearch:7.9.0
+    restart: always
+    container_name: es790Node1
+    environment:
+      - node.name=es790Node1
+      - node.master=true
+      - node.data=true
+      - node.ingest=true
+      - node.ml=true
+      - cluster.name=docker-cluster-79
+      - cluster.initial_master_nodes=es790Node1
+      - discovery.seed_hosts=es790Node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - path.repo=/usr/share/elasticsearch/backup
+      - node.attr.name=es790Node1
+      # - xpack.security.enabled=true
+      # - xpack.security.transport.ssl.enabled=true
+      # - xpack.security.transport.ssl.keystore.type=PKCS12
+      # - xpack.security.transport.ssl.verification_mode=certificate
+      # - xpack.security.transport.ssl.keystore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.type=PKCS12
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      # - es721data1:/usr/share/elasticsearch/data
+      - ./esBackup/:/usr/share/elasticsearch/backup
+      # - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - bigdata
+
+  kibana790:
+    image: kibana:7.9.0
+    container_name: kibana790
+    environment:
+      ELASTICSEARCH_HOSTS: http://es790Node1:9200
+      # ELASTICSEARCH_USERNAME: kibana
+      # ELASTICSEARCH_PASSWORD: kibana-password
+    depends_on:
+      - es790Node1
+    ports:
+      - 5601:561
+    networks:
+      - bigdata
+      # Changed password for user apm_system
+      # PASSWORD apm_system = zfTXHVVkciaoboy1MkTH
+      # Changed password for user kibana
+      # PASSWORD kibana = W3omIVEavL1kVWsnsG7p
+      # Changed password for user logstash_system
+      # PASSWORD logstash_system = jNKTHSjilsMMhP19WGSS
+      # Changed password for user beats_system
+      # PASSWORD beats_system = xAJJP75Sg94Y5bi74GYk
+      # Changed password for user remote_monitoring_user
+      # PASSWORD remote_monitoring_user = GfMMlI4is57muceplA19
+      # Changed password for user elastic
+      # PASSWORD elastic = 2nScHdIQgdBbIgJiQ0z2
+
+  es792Node1:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es792Node1
+    environment:
+      - node.name=es792Node1
+      - node.master=true
+      - node.data=true
+      - node.ingest=true
+      - node.ml=true
+      - cluster.name=docker-cluster-79
+      - cluster.initial_master_nodes=es790Node1
+      - discovery.seed_hosts=es790Node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - path.repo=/usr/share/elasticsearch/backup
+      # - node.attr.name=es721Node1-2
+      # - xpack.security.enabled=true
+      # - xpack.security.transport.ssl.enabled=true
+      # - xpack.security.transport.ssl.keystore.type=PKCS12
+      # - xpack.security.transport.ssl.verification_mode=certificate
+      # - xpack.security.transport.ssl.keystore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.path=elastic-certificates.p12
+      # - xpack.security.transport.ssl.truststore.type=PKCS12
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      # - es721Node1-2:/usr/share/elasticsearch/data
+      - ./esBackup/:/usr/share/elasticsearch/backup
+      # - ./elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+    ports:
+      - 9201:9200
+      - 9301:9300
+    networks:
+      - bigdata
+
+  kibana792:
+    image: kibana:7.9.2
+    container_name: kibana792
+    environment:
+      ELASTICSEARCH_HOSTS: http://es792Node1:9200
+      # ELASTICSEARCH_USERNAME: kibana
+      # ELASTICSEARCH_PASSWORD: kibana-password
+    depends_on:
+      - es792Node1
+    ports:
+      - 5602:5601
+    networks:
+      - bigdata
