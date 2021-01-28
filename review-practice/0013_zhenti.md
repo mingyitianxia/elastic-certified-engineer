@@ -26,7 +26,7 @@ cluster.initial_master_nodes: ["node1"]
 node.name: node2
 node.master: false 
 node.data: true 
-node.ingest: false 
+node.ingest: true 
 node.ml: false 
 cluster.remote.connect: false 
 
@@ -36,7 +36,7 @@ cluster.initial_master_nodes: ["node1"]
 #node3
 node.name: node3
 node.master: false 
-node.data: false 
+node.data: true  
 node.ingest: true 
 node.ml: false 
 cluster.remote.connect: false 
