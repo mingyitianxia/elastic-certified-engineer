@@ -139,7 +139,7 @@ POST kibana_sample_data_logs/_search
 {
   "query": {
     "bool": {
-      "filter": [
+      "should": [
         {
           "match": {
             "tags": "error"
