@@ -44,7 +44,7 @@ POST kibana_sample_data_logs/_search
     "bool": {
       "filter": [
         {
-          "fuzzy": {
+          "prefix": {
             "referer": {
               "value": "http://twitter.com/success"
             }
@@ -61,9 +61,9 @@ POST kibana_sample_data_logs/_search
     "bool": {
       "filter": [
         {
-          "fuzzy": {
-            "referer": {
-              "value": "http://twitter.com/success"
+          "prefix": {
+            "request": {
+              "value": "people"
             }
           }
         }
