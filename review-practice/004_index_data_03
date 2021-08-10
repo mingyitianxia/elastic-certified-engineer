@@ -165,6 +165,52 @@ To verify that an ingest pipeline works as expected, you can rely on the _simula
   }
 }
 
+//更为严谨的答案如下-更新：20210810 多谢：Colin.Wang 的反馈建议
+
+PUT _ingest/pipeline/split_act_scene_line
+{
+  "description": "split pipeline",
+  "processors": [
+    {
+      "split": {
+        "field": "line_number",
+        "separator": """\."""
+      }
+    },
+    {
+      "set": {
+        "field": "number_act",
+        "value": "{{line_number.0}}"
+      }
+    },
+    {
+      "set": {
+        "field": "number_scene",
+        "value": "{{line_number.1}}"
+      }
+    },
+    {
+      "set": {
+        "field": "number_line",
+        "value": "{{line_number.2}}"
+      }
+    }
+  ]
+}
+
+POST _ingest/pipeline/split_act_scene_line/_simulate
+{
+ "docs": [
+    {
+      "_source": {
+        "line_number": "1.2.3"
+      }
+    }
+  ]
+}
+
+//如下内容仅供学习参考
+-------------------分割线开始-----------------------
 PUT _ingest/pipeline/split_act_scene_line
 {
   "description": "split pipeline",
@@ -224,7 +270,7 @@ POST _ingest/pipeline/_simulate
   ]
 }
 
-
+-------------------分割线结束-----------------------
 
 PUT hamlet-new/_doc/111
 {
