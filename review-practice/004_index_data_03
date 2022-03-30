@@ -118,6 +118,70 @@ POST _scripts/control_reindex_batch
   }
 }
 
+-----------------------------7.13 版本正确写法更新 20220330 12:16:00--------------------------------
+
+PUT hamlet
+{
+  "settings": {
+    "number_of_replicas": 0,
+    "number_of_shards": 2
+  },
+  "mappings": {
+    "properties": {
+      "reindexBatch":{"type": "integer"
+      }
+    }
+  }
+}
+
+
+GET hamlet/_mapping
+PUT hamlet/_bulk
+{"index":{"_index":"hamlet","_id":0}}
+{"line_number":"1.1.1","speaker":"BERNARDO","text_entry":"Whos there?", "reindexBatch":3}
+{"index":{"_index":"hamlet","_id":1}}
+{"line_number":"1.1.2","speaker":"FRANCISCO","text_entry":"Nay, answer me: stand, and unfold yourself.", "reindexBatch":3}
+{"index":{"_index":"hamlet","_id":2}}
+{"line_number":"1.1.3","speaker":"BERNARDO","text_entry":"Long live the king!", "reindexBatch":3}
+{"index":{"_index":"hamlet","_id":3}}
+{"line_number":"1.2.1","speaker":"KING CLAUDIUS","text_entry":"Though yet of Hamlet our dear brothers death","reindexBatch":3}
+{"index":{"_index":"hamlet","_id":4}}
+{"line_number":"1.2.1","speaker":"KING CLAUDIUS","text_entry":"Though yet of Hamlet our dear brothers death"}
+
+
+POST _scripts/control_reindex_batch
+{
+  "script": {
+    "lang": "painless",
+  "source": """
+      if (params._source.containsKey('reindexBatch') && params._source.reindexBatch != null) {
+        params._source.reindexBatch += params.increment;
+      } else {
+        params._source.reindexBatch = 1;
+      }
+    """
+  }
+}
+
+POST hamlet/_search
+{
+  "script_fields": {
+    "discount_price": {
+      "script": {
+        "id":"control_reindex_batch",
+        "params": {
+          "increment": 1
+        }
+      }
+    }
+  }
+}
+
+参考官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-fields.html
+
+--------------------------------------------------------------------------------------------------
+
+
 # Create the index `hamlet-new` with 2 primary shards and no 
 #    replicas
 # Reindex `hamlet` into `hamlet-new`, while satisfying the following 
