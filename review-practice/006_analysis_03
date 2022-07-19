@@ -49,6 +49,7 @@ PUT hamlet_1/_bulk
 #    `text_entry` is associated with the `shy_hamlet_analyzer` 
 #    created in the previous step
 
+## 2022-07-19 修复李金虎同学提出的bug
 PUT hamlet_2
 {
   "settings": {
@@ -65,35 +66,34 @@ PUT hamlet_2
           "filter": [
             "my_condition"
           ]
-        }},
-        "char_filter": {
-          "my_char_filter": {
-            "type": "mapping",
-            "mappings": [
-              "Hamlet => [CENSORED]"
-            ]
-          }
-        },
-        "filter": {
-          "my_condition": {
-            "type": "condition",  
-            "filter" : [ "lowercase" ],
-            "script": {
-              "source": "token.getTerm().length() < 5"
-            }
-          }
+        }
+      },
+      "char_filter": {
+        "my_char_filter": {
+          "type": "mapping",
+          "mappings": [
+            "Hamlet => [CENSORED]"
+          ]
+        }
+      },
+      "filter": {
+        "my_condition": {
+          "type": "length",
+          "min": 5
         }
       }
+    }
   },
   "mappings": {
     "properties": {
-      "text_entry":{
+      "text_entry": {
         "type": "text",
         "analyzer": "shy_hamlet_analyzer"
       }
     }
   }
 }
+
 
 # Reindex the `text_entry` field of `hamlet_1` into `hamlet_2`
 # Verify that documents have been reindexed to `hamlet_2` as 
